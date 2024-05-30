@@ -1,0 +1,16 @@
+exporter:
+  port: 9010
+log:
+  # type is [logfmt or json]
+  type: logfmt
+  path: ./powerstoreExporter.out.log
+  level: info
+storageList:
+  - ip: 10.0.0.1
+    user: your-first-powerstore-username
+    password: your-first-powerstore-password
+    apiVersion: v1
+  - ip: 10.0.0.2
+    user: your-second-powerstore-username
+    password: your-second-powerstore-password
+    apiVersion: v1

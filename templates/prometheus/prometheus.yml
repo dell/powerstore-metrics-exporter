@@ -1,0 +1,113 @@
+# my global config
+global:
+  scrape_interval: 10m # Set the scrape interval to every 15 seconds. Default is every 1 minute.
+  evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.
+  # scrape_timeout is set to the global default (10s).
+
+
+# A scrape configuration containing exactly one endpoint to scrape:
+# Here it's Prometheus itself.
+scrape_configs:
+  # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
+  - job_name: "prometheus"
+
+    # metrics_path defaults to '/metrics'
+    # scheme defaults to 'http'.
+
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  - job_name: powerstore_10.0.0.1_cluster
+    honor_timestamps: true
+    scrape_interval: 15m
+    scrape_timeout: 3m
+    metrics_path: /metrics/10.0.0.1/cluster
+    scheme: http
+    follow_redirects: true
+    static_configs:
+      - targets:
+          - 127.0.0.1:9010
+  - job_name: powerstore_10.0.0.1_port
+    honor_timestamps: true
+    scrape_interval: 5m
+    scrape_timeout: 3m
+    metrics_path: /metrics/10.0.0.1/port
+    scheme: http
+    follow_redirects: true
+    static_configs:
+      - targets:
+          - 127.0.0.1:9010
+  - job_name: powerstore_10.0.0.1_file
+    honor_timestamps: true
+    scrape_interval: 15m
+    scrape_timeout: 3m
+    metrics_path: /metrics/10.0.0.1/file
+    scheme: http
+    follow_redirects: true
+    static_configs:
+      - targets:
+          - 127.0.0.1:9010
+  - job_name: powerstore_10.0.0.1_hardware
+    honor_timestamps: true
+    scrape_interval: 10m
+    scrape_timeout: 3m
+    metrics_path: /metrics/10.0.0.1/hardware
+    scheme: http
+    follow_redirects: true
+    static_configs:
+      - targets:
+          - 127.0.0.1:9010
+  - job_name: powerstore_10.0.0.1_volume
+    honor_timestamps: true
+    scrape_interval: 5m
+    scrape_timeout: 3m
+    metrics_path: /metrics/10.0.0.1/volume
+    scheme: http
+    follow_redirects: true
+    static_configs:
+      - targets:
+          - 127.0.0.1:9010
+  - job_name: powerstore_10.0.0.1_appliance
+    honor_timestamps: true
+    scrape_interval: 5m
+    scrape_timeout: 3m
+    metrics_path: /metrics/10.0.0.1/appliance
+    scheme: http
+    follow_redirects: true
+    static_configs:
+      - targets:
+          - 127.0.0.1:9010
+  - job_name: powerstore_10.0.0.1_nas
+    honor_timestamps: true
+    scrape_interval: 15m
+    scrape_timeout: 3m
+    metrics_path: /metrics/10.0.0.1/nas
+    scheme: http
+    follow_redirects: true
+    static_configs:
+      - targets:
+          - 127.0.0.1:9010
+  - job_name: powerstore_10.0.0.1_volumeGroup
+    honor_timestamps: true
+    scrape_interval: 5m
+    scrape_timeout: 3m
+    metrics_path: /metrics/10.0.0.1/volumeGroup
+    scheme: http
+    follow_redirects: true
+    static_configs:
+      - targets:
+          - 127.0.0.1:9010
+  - job_name: powerstore_10.0.0.1_capacity
+    honor_timestamps: true
+    scrape_interval: 15m
+    scrape_timeout: 3m
+    metrics_path: /metrics/10.0.0.1/capacity
+    scheme: http
+    follow_redirects: true
+    static_configs:
+      - targets:
+          - 127.0.0.1:9010
+
+
+
+

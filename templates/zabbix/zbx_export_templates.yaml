@@ -1,0 +1,2230 @@
+zabbix_export:
+  version: '6.0'
+  date: '2024-01-16T09:34:13Z'
+  groups:
+    - uuid: 7df96b18c230490a9a0a9e2307226338
+      name: Templates
+  templates:
+    - uuid: 2e8753d500bb48989a8e9582830122df
+      template: 'Template API Storage Device EMC PowerStore Exporter'
+      name: 'Template API Storage Device EMC PowerStore Exporter'
+      groups:
+        - name: Templates
+      items:
+        - uuid: e73e14a71b9845718c11aaa884fc8db7
+          name: 'Powerstore Appliance'
+          type: HTTP_AGENT
+          key: powerstore.appliance
+          delay: 5m
+          trends: '0'
+          value_type: TEXT
+          timeout: 10s
+          url: 'http://{$HOST_IP}:{$PORT}/metrics/{$PST_IP}/appliance'
+        - uuid: b06369cbd43e4aef9ea49f894490496d
+          name: 'Powerstore Appliance Tag'
+          type: DEPENDENT
+          key: powerstore.appliance.tag
+          delay: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: PROMETHEUS_PATTERN
+              parameters:
+                - 'powerstore_appliance{IP="{$PST_IP}"}'
+                - label
+                - service_tag
+          master_item:
+            key: powerstore.appliance
+          tags:
+            - tag: Application
+              value: appliance
+        - uuid: 4b3ce45d857f42229cd403ba783d31c3
+          name: 'Powerstore Capacity'
+          type: HTTP_AGENT
+          key: powerstore.capacity
+          delay: 10m
+          trends: '0'
+          value_type: TEXT
+          timeout: 10s
+          url: 'http://{$HOST_IP}:{$PORT}/metrics/{$PST_IP}/capacity'
+        - uuid: 7f966c9a53414e62a6c858ac5465af4a
+          name: 'Powerstore Cluster'
+          type: HTTP_AGENT
+          key: powerstore.cluster
+          delay: 15m
+          trends: '0'
+          value_type: TEXT
+          timeout: 10s
+          url: 'http://{$HOST_IP}:{$PORT}/metrics/{$PST_IP}/cluster'
+        - uuid: 62246efe110a4a84a3f24c1cd1b1bc47
+          name: 'Powerstore Cluster Address'
+          type: DEPENDENT
+          key: powerstore.cluster.address
+          delay: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: PROMETHEUS_PATTERN
+              parameters:
+                - 'powerstore_cluster{IP="{$PST_IP}"}'
+                - label
+                - management_address
+          master_item:
+            key: powerstore.cluster
+          tags:
+            - tag: Application
+              value: cluster
+        - uuid: 1b5d0cfd7b2541329c41110bb103850f
+          name: 'Powerstore Cluster Global ID'
+          type: DEPENDENT
+          key: powerstore.cluster.global.id
+          delay: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: PROMETHEUS_PATTERN
+              parameters:
+                - 'powerstore_cluster{IP="{$PST_IP}"}'
+                - label
+                - global_id
+          master_item:
+            key: powerstore.cluster
+          tags:
+            - tag: Application
+              value: cluster
+        - uuid: 155dbe095576484a8b372c646963915d
+          name: 'Powerstore Cluster Master ID'
+          type: DEPENDENT
+          key: powerstore.cluster.master.id
+          delay: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: PROMETHEUS_PATTERN
+              parameters:
+                - 'powerstore_cluster{IP="{$PST_IP}"}'
+                - label
+                - master_appliance_id
+          master_item:
+            key: powerstore.cluster
+          tags:
+            - tag: Application
+              value: cluster
+        - uuid: c7650087638e44f5ba851ce279ce9132
+          name: 'Powerstore Cluster Name'
+          type: DEPENDENT
+          key: powerstore.cluster.name
+          delay: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: PROMETHEUS_PATTERN
+              parameters:
+                - 'powerstore_cluster{IP="{$PST_IP}"}'
+                - label
+                - name
+          master_item:
+            key: powerstore.cluster
+          tags:
+            - tag: Application
+              value: cluster
+        - uuid: b93ecda95d82461787df7019e9585248
+          name: 'Powerstore Cluster State'
+          type: DEPENDENT
+          key: powerstore.cluster.state
+          delay: '0'
+          valuemap:
+            name: 'Hardware Status Value Mapping'
+          preprocessing:
+            - type: PROMETHEUS_PATTERN
+              parameters:
+                - 'powerstore_cluster{IP="{$PST_IP}"}'
+                - value
+                - ''
+          master_item:
+            key: powerstore.cluster
+          tags:
+            - tag: Application
+              value: cluster
+          triggers:
+            - uuid: 3105f8b9bdab45d6a590955b7967815b
+              expression: 'last(/Template API Storage Device EMC PowerStore Exporter/powerstore.cluster.state)<>1 and change(/Template API Storage Device EMC PowerStore Exporter/powerstore.cluster.state)=1'
+              name: 'The cluster status is abnormal'
+              priority: AVERAGE
+        - uuid: b35330c7372e464ab40b26b887d542d3
+          name: 'Powerstore File'
+          type: HTTP_AGENT
+          key: powerstore.file
+          delay: 15m
+          trends: '0'
+          value_type: TEXT
+          timeout: 10s
+          url: 'http://{$HOST_IP}:{$PORT}/metrics/{$PST_IP}/file'
+        - uuid: a3a07e412309442ebd26cc1aebdb3ae1
+          name: 'Powerstore Hardware'
+          type: HTTP_AGENT
+          key: powerstore.hardware
+          delay: 10m
+          trends: '0'
+          value_type: TEXT
+          timeout: 10s
+          url: 'http://{$HOST_IP}:{$PORT}/metrics/{$PST_IP}/hardware'
+        - uuid: adc272e3749a418fb66f6934335c2539
+          name: 'Powerstore Nas'
+          type: HTTP_AGENT
+          key: powerstore.nas
+          delay: 15m
+          trends: '0'
+          value_type: TEXT
+          timeout: 10s
+          url: 'http://{$HOST_IP}:{$PORT}/metrics/{$PST_IP}/nas'
+        - uuid: 2f77a0f87c0a4bc3bf5030f830ee8203
+          name: 'Powerstore Port'
+          type: HTTP_AGENT
+          key: powerstore.port
+          delay: 5m
+          trends: '0'
+          value_type: TEXT
+          timeout: 10s
+          url: 'http://{$HOST_IP}:{$PORT}/metrics/{$PST_IP}/port'
+        - uuid: f5a467bada164d90bde3f819c9e62232
+          name: 'Powerstore Volume'
+          type: HTTP_AGENT
+          key: powerstore.volume
+          delay: 5m
+          trends: '0'
+          value_type: TEXT
+          timeout: 10s
+          url: 'http://{$HOST_IP}:{$PORT}/metrics/{$PST_IP}/volume'
+        - uuid: 7b48bb109cd94ba3ad2cd151e508008a
+          name: 'Powerstore Volume Group'
+          type: HTTP_AGENT
+          key: powerstore.volumegroup
+          delay: 5m
+          trends: '0'
+          value_type: TEXT
+          timeout: 10s
+          url: 'http://{$HOST_IP}:{$PORT}/metrics/{$PST_IP}/volumeGroup'
+      discovery_rules:
+        - uuid: cdd3ba3dda5a4c5695bc58580efeb605
+          name: 'Battery Discovery'
+          type: DEPENDENT
+          key: powerstore.battery.discovery
+          delay: '0'
+          item_prototypes:
+            - uuid: d6435353c6ad468faf0e8986afa3e3a9
+              name: '({#APP_ID}) Battery [{#BATNAME}]: Status'
+              type: DEPENDENT
+              key: 'powerstore.hardware.battery.status[{#APP_ID}_{#BATNAME}]'
+              delay: '0'
+              value_type: FLOAT
+              valuemap:
+                name: 'Hardware Status Value Mapping'
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_hardware_Battery_state{IP="{$PST_IP}",name="{#BATNAME}",appliance_id="{#APP_ID}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.hardware
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: battery
+              trigger_prototypes:
+                - uuid: 587e979f9b6c48e49b3a757311aac507
+                  expression: 'last(/Template API Storage Device EMC PowerStore Exporter/powerstore.hardware.battery.status[{#APP_ID}_{#BATNAME}])<>1'
+                  name: '({#APP_ID}) Battery [{#BATNAME}]: Status is abnormal'
+                  priority: WARNING
+                  manual_close: 'YES'
+          master_item:
+            key: powerstore.hardware
+          lld_macro_paths:
+            - lld_macro: '{#APP_ID}'
+              path: '$.labels["appliance_id"]'
+            - lld_macro: '{#BATNAME}'
+              path: '$.labels["name"]'
+            - lld_macro: '{#HELP}'
+              path: '$["help"]'
+            - lld_macro: '{#NAME}'
+              path: '$["name"]'
+          preprocessing:
+            - type: PROMETHEUS_TO_JSON
+              parameters:
+                - '{__name__=~"^powerstore_hardware_Battery_state",IP="{$PST_IP}"}'
+        - uuid: e3c0c6bcefb14de5ad2c1a326ff2504d
+          name: 'Capacity Discovery'
+          type: DEPENDENT
+          key: powerstore.capacity.discovery
+          delay: '0'
+          item_prototypes:
+            - uuid: 3f23344976094a8eb3e84153182a0d09
+              name: 'Appliance [{#APP_ID}]:Last Data Physical Used'
+              type: DEPENDENT
+              key: 'powerstore.capacity.last.data.physical.used.[{#APP_ID}]'
+              delay: '0'
+              value_type: FLOAT
+              units: B
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_cap_last_data_physical_used{IP="{$PST_IP}",appliance_id="{#APP_ID}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.capacity
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: capacity
+            - uuid: 4e9c4096715446f0898270ddb47cb165
+              name: 'Appliance [{#APP_ID}]:Last Data Reduction'
+              type: DEPENDENT
+              key: 'powerstore.capacity.last.data.reduction[{#APP_ID}]'
+              delay: '0'
+              value_type: FLOAT
+              units: '%'
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_cap_last_data_reduction{IP="{$PST_IP}",appliance_id="{#APP_ID}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.capacity
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: capacity
+            - uuid: 5caf628248d4432785566cdb120866a8
+              name: 'Appliance [{#APP_ID}]:Last Efficiency Ratio'
+              type: DEPENDENT
+              key: 'powerstore.capacity.last.efficiency.ratio.[{#APP_ID}]'
+              delay: '0'
+              value_type: FLOAT
+              units: ':1'
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_cap_last_efficiency_ratio{IP="{$PST_IP}",appliance_id="{#APP_ID}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.capacity
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: capacity
+            - uuid: c4cc4090533644b3bd6ebee576c9a2dd
+              name: 'Appliance [{#APP_ID}]: Last Logical Percent Used'
+              type: CALCULATED
+              key: 'powerstore.capacity.last.logical.percent.used.[{#APP_ID}]'
+              delay: 10m
+              value_type: FLOAT
+              units: '%'
+              params: '100*(last(//powerstore.capacity.last.logical.used.[{#APP_ID}])/last(//powerstore.capacity.last.logical.provisioned.[{#APP_ID}]))'
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: capacity
+            - uuid: 17f2edda84c0454db761c6107e3950b8
+              name: 'Appliance [{#APP_ID}]:Last Logical Provisioned'
+              type: DEPENDENT
+              key: 'powerstore.capacity.last.logical.provisioned.[{#APP_ID}]'
+              delay: '0'
+              value_type: FLOAT
+              units: B
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_cap_last_logical_provisioned{IP="{$PST_IP}",appliance_id="{#APP_ID}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.capacity
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: capacity
+            - uuid: 86ec7c186f3a4a70913ac14355cad89c
+              name: 'Appliance [{#APP_ID}]:Last Logical Used'
+              type: DEPENDENT
+              key: 'powerstore.capacity.last.logical.used.[{#APP_ID}]'
+              delay: '0'
+              value_type: FLOAT
+              units: B
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_cap_last_logical_used{IP="{$PST_IP}",appliance_id="{#APP_ID}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.capacity
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: capacity
+            - uuid: 07d3b9e153e446fb818ae476697620a5
+              name: 'Appliance [{#APP_ID}]:Last Physical Free'
+              type: CALCULATED
+              key: 'powerstore.capacity.last.physical.free.[{#APP_ID}]'
+              delay: 5m
+              value_type: FLOAT
+              units: B
+              params: 'last(//powerstore.capacity.last.physical.total.[{#APP_ID}])-last(//powerstore.capacity.last.physical.used.[{#APP_ID}])'
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: capacity
+            - uuid: b5d476c2d6694702857692f71d542b77
+              name: 'Appliance [{#APP_ID}]:Last Physical Percent Used'
+              type: CALCULATED
+              key: 'powerstore.capacity.last.physical.percent.used.[{#APP_ID}]'
+              delay: 10m
+              value_type: FLOAT
+              units: '%'
+              params: '100*(last(//powerstore.capacity.last.physical.used.[{#APP_ID}])/last(//powerstore.capacity.last.physical.total.[{#APP_ID}]))'
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: capacity
+              trigger_prototypes:
+                - uuid: e9ba6412311d42d78692adcf13ab0ff3
+                  expression: 'last(/Template API Storage Device EMC PowerStore Exporter/powerstore.capacity.last.physical.percent.used.[{#APP_ID}])>=80'
+                  name: 'Appliance [{#APP_ID}] Physical Capacity Used Over 80%'
+                  priority: WARNING
+                  manual_close: 'YES'
+                  dependencies:
+                    - name: 'Appliance [{#APP_ID}] Physical Capacity Used Over 90%'
+                      expression: 'last(/Template API Storage Device EMC PowerStore Exporter/powerstore.capacity.last.physical.percent.used.[{#APP_ID}])>=90'
+                    - name: 'Appliance [{#APP_ID}] Physical Capacity Used Over 95%'
+                      expression: 'last(/Template API Storage Device EMC PowerStore Exporter/powerstore.capacity.last.physical.percent.used.[{#APP_ID}])>=95'
+                - uuid: 0c8f87b5fc1c472bba2403f1338dd1b8
+                  expression: 'last(/Template API Storage Device EMC PowerStore Exporter/powerstore.capacity.last.physical.percent.used.[{#APP_ID}])>=90'
+                  name: 'Appliance [{#APP_ID}] Physical Capacity Used Over 90%'
+                  priority: AVERAGE
+                  manual_close: 'YES'
+                  dependencies:
+                    - name: 'Appliance [{#APP_ID}] Physical Capacity Used Over 95%'
+                      expression: 'last(/Template API Storage Device EMC PowerStore Exporter/powerstore.capacity.last.physical.percent.used.[{#APP_ID}])>=95'
+                - uuid: 70e532524e974acabe6ec9e4d2a9c964
+                  expression: 'last(/Template API Storage Device EMC PowerStore Exporter/powerstore.capacity.last.physical.percent.used.[{#APP_ID}])>=95'
+                  name: 'Appliance [{#APP_ID}] Physical Capacity Used Over 95%'
+                  priority: DISASTER
+                  manual_close: 'YES'
+            - uuid: 015f60bc754c4f4e870d906b0d204b43
+              name: 'Appliance [{#APP_ID}]:Last Physical Total'
+              type: DEPENDENT
+              key: 'powerstore.capacity.last.physical.total.[{#APP_ID}]'
+              delay: '0'
+              value_type: FLOAT
+              units: B
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_cap_last_physical_total{IP="{$PST_IP}",appliance_id="{#APP_ID}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.capacity
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: capacity
+            - uuid: 0a43acbcc4e44537af7013e5f6c61642
+              name: 'Appliance [{#APP_ID}]:Last Physical Used'
+              type: DEPENDENT
+              key: 'powerstore.capacity.last.physical.used.[{#APP_ID}]'
+              delay: '0'
+              value_type: FLOAT
+              units: B
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_cap_last_physical_used{IP="{$PST_IP}",appliance_id="{#APP_ID}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.capacity
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: capacity
+            - uuid: d3439bb364b741c2be3ac8cfab3325cf
+              name: 'Appliance [{#APP_ID}]:Last Physical Used GB'
+              type: DEPENDENT
+              key: 'powerstore.capacity.last.physical.used_GB.[{#APP_ID}]'
+              delay: '0'
+              value_type: FLOAT
+              units: '!GB'
+              preprocessing:
+                - type: MULTIPLIER
+                  parameters:
+                    - '0.00098'
+                - type: MULTIPLIER
+                  parameters:
+                    - '0.00098'
+                - type: MULTIPLIER
+                  parameters:
+                    - '0.00098'
+              master_item:
+                key: 'powerstore.capacity.last.physical.used.[{#APP_ID}]'
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: capacity
+            - uuid: 4ac874c7ccac4cec919b9e1922667e4a
+              name: 'Appliance [{#APP_ID}]:Last Shared Logical Used'
+              type: DEPENDENT
+              key: 'powerstore.capacity.last.shared.logical.used.[{#APP_ID}]'
+              delay: '0'
+              value_type: FLOAT
+              units: B
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_cap_last_shared_logical_used{IP="{$PST_IP}",appliance_id="{#APP_ID}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.capacity
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: capacity
+            - uuid: d6ab9687320445a79eb609fcdfea4d20
+              name: 'Appliance [{#APP_ID}]:Last Thin Savings'
+              type: DEPENDENT
+              key: 'powerstore.capacity.last.thin.savings.[{#APP_ID}]'
+              delay: '0'
+              value_type: FLOAT
+              units: '%'
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_cap_last_thin_savings{IP="{$PST_IP}",appliance_id="{#APP_ID}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.capacity
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: capacity
+          master_item:
+            key: powerstore.capacity
+          lld_macro_paths:
+            - lld_macro: '{#APP_ID}'
+              path: '$.labels["appliance_id"]'
+            - lld_macro: '{#HELP}'
+              path: '$["help"]'
+            - lld_macro: '{#NAME}'
+              path: '$["name"]'
+          preprocessing:
+            - type: PROMETHEUS_TO_JSON
+              parameters:
+                - '{__name__=~"^powerstore_cap_last_logical_provisioned",IP="{$PST_IP}"}'
+        - uuid: f60b1714540645178b7b48e44841198a
+          name: 'Drives Discovery'
+          type: DEPENDENT
+          key: powerstore.drives.discovery
+          delay: '0'
+          item_prototypes:
+            - uuid: 4de7ff1550874f9bba576d59ad692930
+              name: '({#APP_ID}) Drives [{#DRIVENAME}]: life-cycle'
+              type: DEPENDENT
+              key: 'powerstore.hardware.drives.life-cycle[{#APP_ID}_{#DRIVENAME}]'
+              delay: '0'
+              value_type: FLOAT
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_wear_metrics_by_drive{IP="{$PST_IP}",name="{#DRIVENAME}",appliance_id="{#APP_ID}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.hardware
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: driver
+              trigger_prototypes:
+                - uuid: 1ad1782d35e04e84a7df53f3ea2baea3
+                  expression: 'last(/Template API Storage Device EMC PowerStore Exporter/powerstore.hardware.drives.life-cycle[{#APP_ID}_{#DRIVENAME}])<=20'
+                  name: '({#APP_ID}) Drives [{#DRIVENAME}]: Disk Residual Erase Ratio Less than 20%'
+                  priority: WARNING
+                  manual_close: 'YES'
+            - uuid: 2bffef517eb54201a2046af405e71f51
+              name: '({#APP_ID}) Drives [{#DRIVENAME}]: Size'
+              type: DEPENDENT
+              key: 'powerstore.hardware.drives.size[{#APP_ID}_{#DRIVENAME}]'
+              delay: '0'
+              value_type: FLOAT
+              units: B
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_hardware_drive_size{IP="{$PST_IP}",name="{#DRIVENAME}",appliance_id="{#APP_ID}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.hardware
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: driver
+            - uuid: a39c7aaa4f764e2db47c5d2eb2aca7c7
+              name: '({#APP_ID}) Drives [{#DRIVENAME}]: Status'
+              type: DEPENDENT
+              key: 'powerstore.hardware.drives.status[{#APP_ID}_{#DRIVENAME}]'
+              delay: '0'
+              value_type: FLOAT
+              valuemap:
+                name: 'Hardware Status Value Mapping'
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_hardware_Drive_state{IP="{$PST_IP}",name="{#DRIVENAME}",appliance_id="{#APP_ID}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.hardware
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: driver
+              trigger_prototypes:
+                - uuid: b4e56088af5b4fa2aec24b81b79825a4
+                  expression: 'last(/Template API Storage Device EMC PowerStore Exporter/powerstore.hardware.drives.status[{#APP_ID}_{#DRIVENAME}])<>1'
+                  name: '({#APP_ID}) Drives [{#DRIVENAME}] Status is abnormal'
+                  priority: WARNING
+                  manual_close: 'YES'
+            - uuid: dcf7fdcec1a34bdd883462443ae3bd4c
+              name: '({#APP_ID}) Drives [{#DRIVENAME}]: Type'
+              type: DEPENDENT
+              key: 'powerstore.hardware.drives.type[{#APP_ID}_{#DRIVENAME}]'
+              delay: '0'
+              trends: '0'
+              value_type: TEXT
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_hardware_drive_size{IP="{$PST_IP}",name="{#DRIVENAME}",appliance_id="{#APP_ID}"}'
+                    - label
+                    - drive_type
+              master_item:
+                key: powerstore.hardware
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: driver
+          master_item:
+            key: powerstore.hardware
+          lld_macro_paths:
+            - lld_macro: '{#APP_ID}'
+              path: '$.labels["appliance_id"]'
+            - lld_macro: '{#DRIVENAME}'
+              path: '$.labels["name"]'
+            - lld_macro: '{#HELP}'
+              path: '$["help"]'
+            - lld_macro: '{#NAME}'
+              path: '$["name"]'
+          preprocessing:
+            - type: PROMETHEUS_TO_JSON
+              parameters:
+                - '{__name__=~"^powerstore_hardware_drive_size",IP="{$PST_IP}"}'
+        - uuid: 9579d35e88e244bfa2b20867164764c1
+          name: 'EthPort Discovery'
+          type: DEPENDENT
+          key: powerstore.ethport.discovery
+          delay: '0'
+          item_prototypes:
+            - uuid: a3c13b56febe4d66946bd80f09817222
+              name: '({#APP_ID}) EthPort [{#ETHNAME}]: CurrentSpeed'
+              type: DEPENDENT
+              key: 'powerstore.ethport.currentspeed[{#APP_ID}_{#ETHNAME}]'
+              delay: '0'
+              units: Gps
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_eth_port_current_speed{IP="{$PST_IP}",appliance_id="{#APP_ID}",eth_port_id="{#ETHNAME}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.port
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: ethport
+            - uuid: 7b18836443b147a7ad8e23e99ec10e43
+              name: '({#APP_ID}) EthPort [{#ETHNAME}]: Is Link Up'
+              type: DEPENDENT
+              key: 'powerstore.ethport.islinkup.[{#APP_ID}_{#ETHNAME}]'
+              delay: '0'
+              valuemap:
+                name: 'Port Link Value Mapping'
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_eth_port_is_link_up{IP="{$PST_IP}",appliance_id="{#APP_ID}",eth_port_id="{#ETHNAME}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.port
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: ethport
+              trigger_prototypes:
+                - uuid: 3821dd69ff3d4e0fa3b07a1d8c1b27de
+                  expression: 'last(/Template API Storage Device EMC PowerStore Exporter/powerstore.ethport.islinkup.[{#APP_ID}_{#ETHNAME}])<>1 and change(/Template API Storage Device EMC PowerStore Exporter/powerstore.ethport.islinkup.[{#APP_ID}_{#ETHNAME}])=1'
+                  name: '({#APP_ID}) EthPort [{#ETHNAME}] Link status is abnormal'
+                  priority: WARNING
+                  manual_close: 'YES'
+          master_item:
+            key: powerstore.port
+          lld_macro_paths:
+            - lld_macro: '{#APP_ID}'
+              path: '$.labels["appliance_id"]'
+            - lld_macro: '{#ETHNAME}'
+              path: '$.labels["eth_port_id"]'
+            - lld_macro: '{#HELP}'
+              path: '$["help"]'
+            - lld_macro: '{#NAME}'
+              path: '$["name"]'
+          preprocessing:
+            - type: PROMETHEUS_TO_JSON
+              parameters:
+                - '{__name__=~"^powerstore_eth_port_is_link_up",IP="{$PST_IP}"}'
+        - uuid: c8089d44c8424856b825f8e0eda7642e
+          name: 'Fan Discovery'
+          type: DEPENDENT
+          key: powerstore.fan.discovery
+          delay: '0'
+          item_prototypes:
+            - uuid: 99993b0096c44d1686427e68d2517a90
+              name: '({#APP_ID}) Fan [{#FANNAME}]: Status'
+              type: DEPENDENT
+              key: 'powerstore.hardware.fan.status[{#APP_ID}_{#FANNAME}]'
+              delay: '0'
+              value_type: FLOAT
+              valuemap:
+                name: 'Hardware Status Value Mapping'
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_hardware_Fan_state{IP="{$PST_IP}",name="{#FANNAME}",appliance_id="{#APP_ID}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.hardware
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: fan
+              trigger_prototypes:
+                - uuid: fe5405923659457c8feedb2008b134f4
+                  expression: 'last(/Template API Storage Device EMC PowerStore Exporter/powerstore.hardware.fan.status[{#APP_ID}_{#FANNAME}])<>1'
+                  name: '({#APP_ID}) Fan [{#FANNAME}] Status is abnormal'
+                  priority: WARNING
+                  manual_close: 'YES'
+          master_item:
+            key: powerstore.hardware
+          lld_macro_paths:
+            - lld_macro: '{#APP_ID}'
+              path: '$.labels["appliance_id"]'
+            - lld_macro: '{#FANNAME}'
+              path: '$.labels["name"]'
+            - lld_macro: '{#HELP}'
+              path: '$["help"]'
+            - lld_macro: '{#NAME}'
+              path: '$["name"]'
+          preprocessing:
+            - type: PROMETHEUS_TO_JSON
+              parameters:
+                - '{__name__=~"^powerstore_hardware_Fan_state",IP="{$PST_IP}"}'
+        - uuid: cafeef2e7f8e424aba066d4e150afd15
+          name: 'FCPort Discovery'
+          type: DEPENDENT
+          key: powerstore.fcPort.discovery
+          delay: '0'
+          item_prototypes:
+            - uuid: af824bb614f343d08ef67d60bdc004e6
+              name: '({#APP_ID}) FcPort [{#FCNAME}]: CurrentSpeed'
+              type: DEPENDENT
+              key: 'powerstore.fcport.currentspeed[{#APP_ID}_{#FCNAME}]'
+              delay: '0'
+              units: Gps
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_fc_port_current_speed{IP="{$PST_IP}",appliance_id="{#APP_ID}",fc_port_id="{#FCNAME}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.port
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: fcport
+            - uuid: 3fb1b8f47db74bb2af30f1d343e1884d
+              name: '({#APP_ID}) FcPort [{#FCNAME}]: Is Link Up'
+              type: DEPENDENT
+              key: 'powerstore.fcport.islinkup.[{#APP_ID}_{#FCNAME}]'
+              delay: '0'
+              valuemap:
+                name: 'Port Link Value Mapping'
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_fc_port_is_link_up{IP="{$PST_IP}",appliance_id="{#APP_ID}",fc_port_id="{#FCNAME}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.port
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: fcport
+              trigger_prototypes:
+                - uuid: c58353839059402b99b27844edcb299c
+                  expression: 'last(/Template API Storage Device EMC PowerStore Exporter/powerstore.fcport.islinkup.[{#APP_ID}_{#FCNAME}])<>1 and change(/Template API Storage Device EMC PowerStore Exporter/powerstore.fcport.islinkup.[{#APP_ID}_{#FCNAME}])=1'
+                  name: '({#APP_ID}) FcPort [{#FCNAME}] Link status is abnormal'
+                  priority: WARNING
+                  manual_close: 'YES'
+          master_item:
+            key: powerstore.port
+          lld_macro_paths:
+            - lld_macro: '{#APP_ID}'
+              path: '$.labels["appliance_id"]'
+            - lld_macro: '{#FCNAME}'
+              path: '$.labels["fc_port_id"]'
+            - lld_macro: '{#HELP}'
+              path: '$["help"]'
+            - lld_macro: '{#NAME}'
+              path: '$["name"]'
+          preprocessing:
+            - type: PROMETHEUS_TO_JSON
+              parameters:
+                - '{__name__=~"^powerstore_fc_port_is_link_up",IP="{$PST_IP}"}'
+        - uuid: cb64f660d7634cd5a40bc1bd072dc2c8
+          name: 'FileSystem Discovery'
+          type: DEPENDENT
+          key: powerstore.filesystem.discovery
+          delay: '0'
+          item_prototypes:
+            - uuid: 806eee8240414b368f7659f552e1c738
+              name: '({#APP_ID}) File [{#FILENAME}]:Size Total'
+              type: DEPENDENT
+              key: 'file.size.total.[{#APP_ID}_{#FILENAME}]'
+              delay: '0'
+              value_type: FLOAT
+              units: B
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_filesystem_size_total{IP="{$PST_IP}",name="{#FILENAME}",appliance_id="{#APP_ID}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.file
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: filesystem
+            - uuid: 20615f6649cd4eef93ed5eedb40546d7
+              name: '({#APP_ID}) File [{#FILENAME}]:Size Used'
+              type: DEPENDENT
+              key: 'file.size.used.[{#APP_ID}_{#FILENAME}]'
+              delay: '0'
+              value_type: FLOAT
+              units: B
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_filesystem_size_used{IP="{$PST_IP}",name="{#FILENAME}",appliance_id="{#APP_ID}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.file
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: filesystem
+          master_item:
+            key: powerstore.file
+          lld_macro_paths:
+            - lld_macro: '{#APP_ID}'
+              path: '$.labels["appliance_id"]'
+            - lld_macro: '{#FILENAME}'
+              path: '$.labels["name"]'
+            - lld_macro: '{#HELP}'
+              path: '$["help"]'
+            - lld_macro: '{#NAME}'
+              path: '$["name"]'
+          preprocessing:
+            - type: PROMETHEUS_TO_JSON
+              parameters:
+                - '{__name__=~"^powerstore_filesystem_size_total",IP="{$PST_IP}"}'
+        - uuid: 427084951c7249d089f4add540a745d3
+          name: 'Nas Server Discovery'
+          type: DEPENDENT
+          key: powerstore.nas.server.discovery
+          delay: '0'
+          item_prototypes:
+            - uuid: 20db9c16b4ef4151af4c42306dac232c
+              name: '({#APP_ID}) Nas [{#NASNAME}]:Server Status'
+              type: DEPENDENT
+              key: 'powerstore.nas.server.status.[{#APP_ID}_{#NASNAME}]'
+              delay: '0'
+              valuemap:
+                name: 'Hardware Status Value Mapping'
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_nas_server_operational_status{IP="{$PST_IP}",name="{#NASNAME}",appliance_id="{#APP_ID}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.nas
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: nas
+          master_item:
+            key: powerstore.nas
+          lld_macro_paths:
+            - lld_macro: '{#APP_ID}'
+              path: '$.labels["appliance_id"]'
+            - lld_macro: '{#HELP}'
+              path: '$["help"]'
+            - lld_macro: '{#NAME}'
+              path: '$["name"]'
+            - lld_macro: '{#NASNAME}'
+              path: '$.labels["name"]'
+          preprocessing:
+            - type: PROMETHEUS_TO_JSON
+              parameters:
+                - '{__name__=~"^powerstore_nas_server_operational_status",IP="{$PST_IP}"}'
+        - uuid: a79f7e512fbf4a9fb902227bb8983943
+          name: 'Node Discovery'
+          type: DEPENDENT
+          key: powerstore.node.discovery
+          delay: '0'
+          item_prototypes:
+            - uuid: fe206b1d3a5f455cbac9e02fd65c843a
+              name: '({#APP_ID}) Node [{#NODENAME}]:SN'
+              type: DEPENDENT
+              key: 'powerstore.hardware.node.sn.[{#APP_ID}_{#NODENAME}]'
+              delay: '0'
+              trends: '0'
+              value_type: TEXT
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_hardware_node_state{IP="{$PST_IP}",name="{#NODENAME}",appliance_id="{#APP_ID}"}'
+                    - label
+                    - serial_number
+              master_item:
+                key: powerstore.hardware
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: node
+            - uuid: c167e27ee01e42629da5ddc7a09723c5
+              name: '({#APP_ID}) Node [{#NODENAME}]:Status'
+              type: DEPENDENT
+              key: 'powerstore.hardware.node.type.[{#APP_ID}_{#NODENAME}]'
+              delay: '0'
+              trends: '0'
+              value_type: TEXT
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_hardware_node_state{IP="{$PST_IP}",name="{#NODENAME}",appliance_id="{#APP_ID}"}'
+                    - label
+                    - state
+              master_item:
+                key: powerstore.hardware
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: node
+              trigger_prototypes:
+                - uuid: 2bec1fc039a9424095a92c3c25388d2f
+                  expression: 'last(/Template API Storage Device EMC PowerStore Exporter/powerstore.hardware.node.type.[{#APP_ID}_{#NODENAME}])<>"Healthy"'
+                  name: '({#APP_ID}) Node [{#NODENAME}] Status is abnormal'
+                  priority: AVERAGE
+                  manual_close: 'YES'
+          master_item:
+            key: powerstore.hardware
+          lld_macro_paths:
+            - lld_macro: '{#APP_ID}'
+              path: '$.labels["appliance_id"]'
+            - lld_macro: '{#HELP}'
+              path: '$["help"]'
+            - lld_macro: '{#NAME}'
+              path: '$["name"]'
+            - lld_macro: '{#NODENAME}'
+              path: '$.labels["name"]'
+          preprocessing:
+            - type: PROMETHEUS_TO_JSON
+              parameters:
+                - '{__name__=~"^powerstore_hardware_node_state",IP="{$PST_IP}"}'
+        - uuid: 381ab955014d4858b6314e33faf8ed04
+          name: 'Performance Appliance'
+          type: DEPENDENT
+          key: powerstore.performance.appliance.discovery
+          delay: '0'
+          item_prototypes:
+            - uuid: 87b50b181b8d49218c35580397a3fe83
+              name: 'Appliance [{#ID}]:Avg IO Workload Cpu Utilization'
+              type: DEPENDENT
+              key: 'powerstore.perf.avg.io.workload.cpu.utilization[{#ID}]'
+              delay: '0'
+              value_type: FLOAT
+              units: '%'
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_perf_avg_io_workload_cpu_utilization{IP="{$PST_IP}",appliance_id="{#ID}"}'
+                    - value
+                    - ''
+                - type: MULTIPLIER
+                  parameters:
+                    - '100'
+              master_item:
+                key: powerstore.appliance
+              tags:
+                - tag: Appliance
+                  value: '{#ID}'
+                - tag: Application
+                  value: 'performance appliance'
+            - uuid: c192138b0f2d4015bbe921296e2a958b
+              name: 'Appliance [{#ID}]:Avg Latency Read'
+              type: DEPENDENT
+              key: 'powerstore.perf.avg.latency.read[{#ID}]'
+              delay: '0'
+              value_type: FLOAT
+              units: ms
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_perf_avg_read_latency{IP="{$PST_IP}",appliance_id="{#ID}"}'
+                    - value
+                    - ''
+                - type: MULTIPLIER
+                  parameters:
+                    - '0.001'
+              master_item:
+                key: powerstore.appliance
+              tags:
+                - tag: Appliance
+                  value: '{#ID}'
+                - tag: Application
+                  value: 'performance appliance'
+            - uuid: 130b8805797942df8c0e2c2767addd66
+              name: 'Appliance [{#ID}]:Avg Latency Write'
+              type: DEPENDENT
+              key: 'powerstore.perf.avg.latency.write[{#ID}]'
+              delay: '0'
+              value_type: FLOAT
+              units: ms
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_perf_avg_write_latency{IP="{$PST_IP}",appliance_id="{#ID}"}'
+                    - value
+                    - ''
+                - type: MULTIPLIER
+                  parameters:
+                    - '0.001'
+              master_item:
+                key: powerstore.appliance
+              tags:
+                - tag: Appliance
+                  value: '{#ID}'
+                - tag: Application
+                  value: 'performance appliance'
+            - uuid: 0730ad1911ad4cdf9616ef0fc4e8565f
+              name: 'Appliance [{#ID}]:Avg Latency'
+              type: DEPENDENT
+              key: 'powerstore.perf.avg.latency[{#ID}]'
+              delay: '0'
+              value_type: FLOAT
+              units: ms
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_perf_avg_latency{IP="{$PST_IP}",appliance_id="{#ID}"}'
+                    - value
+                    - ''
+                - type: MULTIPLIER
+                  parameters:
+                    - '0.001'
+              master_item:
+                key: powerstore.appliance
+              tags:
+                - tag: Appliance
+                  value: '{#ID}'
+                - tag: Application
+                  value: 'performance appliance'
+            - uuid: cfbd4434426d4844bd23813f24975c5c
+              name: 'Appliance [{#ID}]:Bandwidth Read'
+              type: DEPENDENT
+              key: 'powerstore.perf.bandwidth.read[{#ID}]'
+              delay: '0'
+              value_type: FLOAT
+              units: B/s
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_perf_avg_read_bandwidth{IP="{$PST_IP}",appliance_id="{#ID}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.appliance
+              tags:
+                - tag: Appliance
+                  value: '{#ID}'
+                - tag: Application
+                  value: 'performance appliance'
+            - uuid: 2dc7bb3531a6409ab1364ed30d1a8946
+              name: 'Appliance [{#ID}]:Bandwidth Total'
+              type: DEPENDENT
+              key: 'powerstore.perf.bandwidth.total[{#ID}]'
+              delay: '0'
+              value_type: FLOAT
+              units: B/s
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_perf_avg_total_bandwidth{IP="{$PST_IP}",appliance_id="{#ID}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.appliance
+              tags:
+                - tag: Appliance
+                  value: '{#ID}'
+                - tag: Application
+                  value: 'performance appliance'
+            - uuid: a2763e7e0b6b4b9fb308d31666923abd
+              name: 'Appliance [{#ID}]:Bandwidth Write'
+              type: DEPENDENT
+              key: 'powerstore.perf.bandwidth.write[{#ID}]'
+              delay: '0'
+              value_type: FLOAT
+              units: B/s
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_perf_avg_write_bandwidth{IP="{$PST_IP}",appliance_id="{#ID}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.appliance
+              tags:
+                - tag: Appliance
+                  value: '{#ID}'
+                - tag: Application
+                  value: 'performance appliance'
+            - uuid: 3364ac0d366640eba590eab6efd5d9b6
+              name: 'Appliance [{#ID}]: IOPS Read'
+              type: DEPENDENT
+              key: 'powerstore.perf.iops.read[{#ID}]'
+              delay: '0'
+              value_type: FLOAT
+              units: iops
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_perf_avg_read_iops{IP="{$PST_IP}",appliance_id="{#ID}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.appliance
+              tags:
+                - tag: Appliance
+                  value: '{#ID}'
+                - tag: Application
+                  value: 'performance appliance'
+            - uuid: 6cb27fc0fbd8418f8e60bfdd67f5230b
+              name: 'Appliance [{#ID}]: IOPS Total'
+              type: DEPENDENT
+              key: 'powerstore.perf.iops.total[{#ID}]'
+              delay: '0'
+              value_type: FLOAT
+              units: iops
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_perf_avg_total_iops{IP="{$PST_IP}",appliance_id="{#ID}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.appliance
+              tags:
+                - tag: Appliance
+                  value: '{#ID}'
+                - tag: Application
+                  value: 'performance appliance'
+            - uuid: 43e4fc1ec7aa47e5bb5130094f41762a
+              name: 'Appliance [{#ID}]: IOPS Write'
+              type: DEPENDENT
+              key: 'powerstore.perf.iops.write[{#ID}]'
+              delay: '0'
+              value_type: FLOAT
+              units: iops
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_perf_avg_write_iops{IP="{$PST_IP}",appliance_id="{#ID}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.appliance
+              tags:
+                - tag: Appliance
+                  value: '{#ID}'
+                - tag: Application
+                  value: 'performance appliance'
+          master_item:
+            key: powerstore.appliance
+          lld_macro_paths:
+            - lld_macro: '{#HELP}'
+              path: '$["help"]'
+            - lld_macro: '{#ID}'
+              path: '$.labels["appliance_id"]'
+            - lld_macro: '{#NAME}'
+              path: '$["name"]'
+          preprocessing:
+            - type: PROMETHEUS_TO_JSON
+              parameters:
+                - '{__name__=~"^powerstore_appliance",IP="{$PST_IP}"}'
+        - uuid: 3ee02eb57c15449cbf5048f3ce01d996
+          name: 'Performance EthPort Discovery'
+          type: DEPENDENT
+          key: powerstore.performance.ethPort.discovery
+          delay: '0'
+          item_prototypes:
+            - uuid: 7958ad8f452641e49978c5706c071643
+              name: '({#APP_ID}) EthPort [{#ETHID}]: Bytes Rx Ps'
+              type: DEPENDENT
+              key: 'powerstore.metric.ethport.bytes_rx_ps[{#APP_ID}_{#ETHID}]'
+              delay: '0'
+              value_type: FLOAT
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_metricEthPort_avg_bytes_rx_ps{IP="{$PST_IP}",eth_port_id="{#ETHID}",appliance_id="{#APP_ID}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.port
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: 'performance ethport'
+            - uuid: 2dbfbb8257524c9694b509e95c1afc56
+              name: '({#APP_ID}) EthPort [{#ETHID}]: Bytes Tx Ps'
+              type: DEPENDENT
+              key: 'powerstore.metric.ethport.bytes_tx_ps[{#APP_ID}_{#ETHID}]'
+              delay: '0'
+              value_type: FLOAT
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_metricEthPort_avg_bytes_tx_ps{IP="{$PST_IP}",eth_port_id="{#ETHID}",appliance_id="{#APP_ID}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.port
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: 'performance ethport'
+            - uuid: 6a23a2e71ca04b2d95901f0f08dd5423
+              name: '({#APP_ID}) EthPort [{#ETHID}]: Pkt Rx Crc Error Ps'
+              type: DEPENDENT
+              key: 'powerstore.metric.ethport.pkt_rx_crc_error_ps[{#APP_ID}_{#ETHID}]'
+              delay: '0'
+              value_type: FLOAT
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_metricEthPort_avg_pkt_rx_crc_error_ps{IP="{$PST_IP}",eth_port_id="{#ETHID}",appliance_id="{#APP_ID}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.port
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: 'performance ethport'
+            - uuid: 54ae7641d5674d5da7a882c7ab3db456
+              name: '({#APP_ID}) EthPort [{#ETHID}]: Pkt Rx No Buffer Error Ps'
+              type: DEPENDENT
+              key: 'powerstore.metric.ethport.pkt_rx_no_buffer_error_ps[{#APP_ID}_{#ETHID}]'
+              delay: '0'
+              value_type: FLOAT
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_metricEthPort_avg_pkt_rx_no_buffer_error_ps{IP="{$PST_IP}",eth_port_id="{#ETHID}",appliance_id="{#APP_ID}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.port
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: 'performance ethport'
+            - uuid: 67b4e1e5f90b4cb1aea5be5088d6ff01
+              name: '({#APP_ID}) EthPort [{#ETHID}]: Pkt Rx Ps'
+              type: DEPENDENT
+              key: 'powerstore.metric.ethport.pkt_rx_ps[{#APP_ID}_{#ETHID}]'
+              delay: '0'
+              value_type: FLOAT
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_metricEthPort_avg_pkt_rx_ps{IP="{$PST_IP}",eth_port_id="{#ETHID}",appliance_id="{#APP_ID}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.port
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: 'performance ethport'
+            - uuid: aca82b9a8fb1415d9fd2541a320bba99
+              name: '({#APP_ID}) EthPort [{#ETHID}]: Pkt Tx Error Ps'
+              type: DEPENDENT
+              key: 'powerstore.metric.ethport.pkt_tx_error_ps[{#APP_ID}_{#ETHID}]'
+              delay: '0'
+              value_type: FLOAT
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_metricEthPort_avg_pkt_tx_error_ps{IP="{$PST_IP}",eth_port_id="{#ETHID}",appliance_id="{#APP_ID}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.port
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: 'performance ethport'
+            - uuid: f4be366fd02f4d72b32eaba1cc6f21a5
+              name: '({#APP_ID}) EthPort [{#ETHID}]: Pkt Tx Ps'
+              type: DEPENDENT
+              key: 'powerstore.metric.ethport.pkt_tx_ps[{#APP_ID}_{#ETHID}]'
+              delay: '0'
+              value_type: FLOAT
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_metricEthPort_avg_pkt_tx_ps{IP="{$PST_IP}",eth_port_id="{#ETHID}",appliance_id="{#APP_ID}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.port
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: 'performance ethport'
+          master_item:
+            key: powerstore.port
+          lld_macro_paths:
+            - lld_macro: '{#APP_ID}'
+              path: '$.labels["appliance_id"]'
+            - lld_macro: '{#ETHID}'
+              path: '$.labels["eth_port_id"]'
+            - lld_macro: '{#HELP}'
+              path: '$["help"]'
+            - lld_macro: '{#NAME}'
+              path: '$["name"]'
+          preprocessing:
+            - type: PROMETHEUS_TO_JSON
+              parameters:
+                - '{__name__=~"^powerstore_metricEthPort_avg_bytes_rx_ps",IP="{$PST_IP}"}'
+        - uuid: cd0379eabbde455b884509331687740b
+          name: 'Performance FcPort Discovery'
+          type: DEPENDENT
+          key: powerstore.performance.fcPort.discovery
+          delay: '0'
+          item_prototypes:
+            - uuid: dc8d7844001848da97ab6790b52b0492
+              name: '({#APP_ID}) FcPort [{#FCID}]: Avg Latency Read'
+              type: DEPENDENT
+              key: 'powerstore.metric.fcport.avg.latency.read[{#APP_ID}_{#FCID}]'
+              delay: '0'
+              value_type: FLOAT
+              units: ms
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_metricFcPort_avg_read_latency{IP="{$PST_IP}",fc_port_id="{#FCID}",appliance_id="{#APP_ID}"}'
+                    - value
+                    - ''
+                - type: MULTIPLIER
+                  parameters:
+                    - '0.001'
+              master_item:
+                key: powerstore.port
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: 'performance fcport'
+            - uuid: 7b52488560cd4633981df63f20247b8d
+              name: '({#APP_ID}) FcPort [{#FCID}]: Avg Latency Write'
+              type: DEPENDENT
+              key: 'powerstore.metric.fcport.avg.latency.write[{#APP_ID}_{#FCID}]'
+              delay: '0'
+              value_type: FLOAT
+              units: ms
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_metricFcPort_avg_write_latency{IP="{$PST_IP}",fc_port_id="{#FCID}",appliance_id="{#APP_ID}"}'
+                    - value
+                    - ''
+                - type: MULTIPLIER
+                  parameters:
+                    - '0.001'
+              master_item:
+                key: powerstore.port
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: 'performance fcport'
+            - uuid: d0d52cbc03154933b1cfb9e62dce6a2b
+              name: '({#APP_ID}) FcPort [{#FCID}]: Bandwidth Total'
+              type: DEPENDENT
+              key: 'powerstore.metric.fcport.bandwidth.total[{#APP_ID}_{#FCID}]'
+              delay: '0'
+              value_type: FLOAT
+              units: B/s
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_metricFcPort_avg_total_bandwidth{IP="{$PST_IP}",fc_port_id="{#FCID}",appliance_id="{#APP_ID}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.port
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: 'performance fcport'
+            - uuid: e614851436814eed9da9c9f9dac5d3d8
+              name: '({#APP_ID}) FcPort [{#FCID}]: Dumped_Frames_ps'
+              type: DEPENDENT
+              key: 'powerstore.metric.fcport.dumped_frames_ps[{#APP_ID}_{#FCID}]'
+              delay: '0'
+              value_type: FLOAT
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_metricFcPort_avg_dumped_frames_ps{IP="{$PST_IP}",fc_port_id="{#FCID}",appliance_id="{#APP_ID}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.port
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: 'performance fcport'
+            - uuid: c744f54ed5f643d2b7e8d0121341a6ed
+              name: '({#APP_ID}) FcPort [{#FCID}]: Invalid_crc_count_ps'
+              type: DEPENDENT
+              key: 'powerstore.metric.fcport.invalid_crc_count_ps.[{#FCID}]'
+              delay: '0'
+              value_type: FLOAT
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_metricFcPort_avg_invalid_crc_count_ps{IP="{$PST_IP}",fc_port_id="{#FCID}",appliance_id="{#APP_ID}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.port
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: 'performance fcport'
+            - uuid: 6a513f7499934d64bb6ef6580dc8367b
+              name: '({#APP_ID}) FcPort [{#FCID}]: Invalid Tx Word Count Ps'
+              type: DEPENDENT
+              key: 'powerstore.metric.fcport.invalid_tx_word_count_ps[{#APP_ID}_{#FCID}]'
+              delay: '0'
+              value_type: FLOAT
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_metricFcPort_avg_invalid_tx_word_count_ps{IP="{$PST_IP}",fc_port_id="{#FCID}",appliance_id="{#APP_ID}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.port
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: 'performance fcport'
+            - uuid: 96e3478688e94d96a08105d531f7e007
+              name: '({#APP_ID}) FcPort [{#FCID}]: IOPS Total'
+              type: DEPENDENT
+              key: 'powerstore.metric.fcport.iops.total[{#APP_ID}_{#FCID}]'
+              delay: '0'
+              value_type: FLOAT
+              units: iops
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_metricFcPort_avg_total_iops{IP="{$PST_IP}",fc_port_id="{#FCID}",appliance_id="{#APP_ID}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.port
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: 'performance fcport'
+            - uuid: b0afd24ebba747de933e8991f14b06ad
+              name: '({#APP_ID}) FcPort [{#FCID}]: Link Failure Count Ps'
+              type: DEPENDENT
+              key: 'powerstore.metric.fcport.link_failure_count_ps[{#APP_ID}_{#FCID}]'
+              delay: '0'
+              value_type: FLOAT
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_metricFcPort_avg_link_failure_count_ps{IP="{$PST_IP}",fc_port_id="{#FCID}",appliance_id="{#APP_ID}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.port
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: 'performance fcport'
+            - uuid: ffab29cdc80e419ca2a5a5bbf425e375
+              name: '({#APP_ID}) FcPort [{#FCID}]: Loss Of Signal Count Ps'
+              type: DEPENDENT
+              key: 'powerstore.metric.fcport.loss_of_signal_count_ps[{#APP_ID}_{#FCID}]'
+              delay: '0'
+              value_type: FLOAT
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_metricFcPort_avg_loss_of_signal_count_ps{IP="{$PST_IP}",fc_port_id="{#FCID}",appliance_id="{#APP_ID}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.port
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: 'performance fcport'
+            - uuid: 9d3f1664574a4b819ddd738078787814
+              name: '({#APP_ID}) FcPort [{#FCID}]: Loss Of Sync Count Ps'
+              type: DEPENDENT
+              key: 'powerstore.metric.fcport.loss_of_sync_count_ps.[{#FCID}]'
+              delay: '0'
+              value_type: FLOAT
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_metricFcPort_avg_loss_of_sync_count_ps{IP="{$PST_IP}",fc_port_id="{#FCID}",appliance_id="{#APP_ID}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.port
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: 'performance fcport'
+          master_item:
+            key: powerstore.port
+          lld_macro_paths:
+            - lld_macro: '{#APP_ID}'
+              path: '$.labels["appliance_id"]'
+            - lld_macro: '{#FCID}'
+              path: '$.labels["fc_port_id"]'
+            - lld_macro: '{#HELP}'
+              path: '$["help"]'
+            - lld_macro: '{#NAME}'
+              path: '$["name"]'
+          preprocessing:
+            - type: PROMETHEUS_TO_JSON
+              parameters:
+                - '{__name__=~"^powerstore_metricFcPort_avg_total_bandwidth",IP="{$PST_IP}"}'
+        - uuid: 68aa8a8e026c48aaab6f146709cca1b8
+          name: 'Performance Volume Discovery'
+          type: DEPENDENT
+          key: powerstore.performance.volume.discovery
+          delay: '0'
+          item_prototypes:
+            - uuid: 3ee427379cda4319a400ab9b7b52c946
+              name: '({#APP_ID}) Volume [{#VOLUMENAME}]: Bandwidth Total'
+              type: DEPENDENT
+              key: 'powerstore.metric.volume.avg.bandwidth.total[{#APP_ID}_{#VOLUMENAME}]'
+              delay: '0'
+              value_type: FLOAT
+              units: B/s
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_metricVolume_avg_total_bandwidth{IP="{$PST_IP}",volume_id="{#VOLUMENAME}",appliance_id="{#APP_ID}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.volume
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: 'performance volume'
+            - uuid: 653cbf62e9504a4594420fd57d2d3f35
+              name: '({#APP_ID}) Volume [{#VOLUMENAME}]: Bandwidth Write'
+              type: DEPENDENT
+              key: 'powerstore.metric.volume.avg.bandwidth.write[{#APP_ID}_{#VOLUMENAME}]'
+              delay: '0'
+              value_type: FLOAT
+              units: B/s
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_metricVolume_avg_write_bandwidth{IP="{$PST_IP}",volume_id="{#VOLUMENAME}",appliance_id="{#APP_ID}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.volume
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: 'performance volume'
+            - uuid: d9a75247baf04fb092e95836a2467ab0
+              name: '({#APP_ID}) Volume [{#VOLUMENAME}]: Latency Read'
+              type: DEPENDENT
+              key: 'powerstore.metric.volume.avg.latency.read[{#APP_ID}_{#VOLUMENAME}]'
+              delay: '0'
+              value_type: FLOAT
+              units: ms
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_metricVolume_avg_read_latency{IP="{$PST_IP}",volume_id="{#VOLUMENAME}",appliance_id="{#APP_ID}"}'
+                    - value
+                    - ''
+                - type: MULTIPLIER
+                  parameters:
+                    - '0.001'
+              master_item:
+                key: powerstore.volume
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: 'performance volume'
+            - uuid: b3f45c8af38744caa77349c1fc70850b
+              name: '({#APP_ID}) Volume [{#VOLUMENAME}]: Latency Write'
+              type: DEPENDENT
+              key: 'powerstore.metric.volume.avg.latency.write[{#APP_ID}_{#VOLUMENAME}]'
+              delay: '0'
+              value_type: FLOAT
+              units: ms
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_metricVolume_avg_write_latency{IP="{$PST_IP}",volume_id="{#VOLUMENAME}",appliance_id="{#APP_ID}"}'
+                    - value
+                    - ''
+                - type: MULTIPLIER
+                  parameters:
+                    - '0.001'
+              master_item:
+                key: powerstore.volume
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: 'performance volume'
+            - uuid: e584a2fedb594a4aa586773418ee59d8
+              name: '({#APP_ID}) Volume [{#VOLUMENAME}]: IOPS Read'
+              type: DEPENDENT
+              key: 'powerstore.metric.volume.iops.read[{#APP_ID}_{#VOLUMENAME}]'
+              delay: '0'
+              value_type: FLOAT
+              units: iops
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_metricVolume_avg_read_iops{IP="{$PST_IP}",volume_id="{#VOLUMENAME}",appliance_id="{#APP_ID}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.volume
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: 'performance volume'
+            - uuid: 3fb570ae5e6b408992035f229839cee5
+              name: '({#APP_ID}) Volume [{#VOLUMENAME}]: IOPS Write'
+              type: DEPENDENT
+              key: 'powerstore.metric.volume.iops.write[{#APP_ID}_{#VOLUMENAME}]'
+              delay: '0'
+              value_type: FLOAT
+              units: iops
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_metricVolume_avg_write_iops{IP="{$PST_IP}",volume_id="{#VOLUMENAME}",appliance_id="{#APP_ID}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.volume
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: 'performance volume'
+            - uuid: fe8e322598a14087970cb56c23f163a4
+              name: '({#APP_ID}) Volume [{#VOLUMENAME}]: Bandwidth Read'
+              type: DEPENDENT
+              key: 'powerstore.performance.volume.avg.bandwidth.read[{#APP_ID}_{#VOLUMENAME}]'
+              delay: '0'
+              value_type: FLOAT
+              units: B/s
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_metricVolume_avg_read_bandwidth{IP="{$PST_IP}",volume_id="{#VOLUMENAME}",appliance_id="{#APP_ID}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.volume
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: 'performance volume'
+            - uuid: 50317d6230d640edb89276588c289f94
+              name: '({#APP_ID}) Volume [{#VOLUMENAME}]: Latency Total'
+              type: DEPENDENT
+              key: 'powerstore.performance.volume.avg.latency.total[{#APP_ID}_{#VOLUMENAME}]'
+              delay: '0'
+              value_type: FLOAT
+              units: ms
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_metricVolume_avg_latency{IP="{$PST_IP}",volume_id="{#VOLUMENAME}",appliance_id="{#APP_ID}"}'
+                    - value
+                    - ''
+                - type: MULTIPLIER
+                  parameters:
+                    - '0.001'
+              master_item:
+                key: powerstore.volume
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: 'performance volume'
+            - uuid: af42f702b57c4f06a6540e75151c2ee3
+              name: '({#APP_ID}) Volume [{#VOLUMENAME}]: IOPS Total'
+              type: DEPENDENT
+              key: 'powerstore.performance.volume.iops.total[{#APP_ID}_{#VOLUMENAME}]'
+              delay: '0'
+              value_type: FLOAT
+              units: iops
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_metricVolume_avg_total_iops{IP="{$PST_IP}",volume_id="{#VOLUMENAME}",appliance_id="{#APP_ID}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.volume
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: 'performance volume'
+          master_item:
+            key: powerstore.volume
+          lld_macro_paths:
+            - lld_macro: '{#APP_ID}'
+              path: '$.labels["appliance_id"]'
+            - lld_macro: '{#HELP}'
+              path: '$["help"]'
+            - lld_macro: '{#NAME}'
+              path: '$["name"]'
+            - lld_macro: '{#VOLUMENAME}'
+              path: '$.labels["volume_id"]'
+          preprocessing:
+            - type: PROMETHEUS_TO_JSON
+              parameters:
+                - '{__name__=~"^powerstore_metricVolume_avg_latency",IP="{$PST_IP}"}'
+        - uuid: dc4cdb49e8104fa19d433c5c49d5bbbb
+          name: 'Performance Volume Group Discovery'
+          type: DEPENDENT
+          key: powerstore.performance.volumegroup.discovery
+          delay: '0'
+          item_prototypes:
+            - uuid: e4065a29c4bd4d1e977d04569f22f88e
+              name: '({#APP_ID}) VG [{#VGNAME}]: Bandwidth Read'
+              type: DEPENDENT
+              key: 'powerstore.performance.vg.bandwidth.read[{#APP_ID}_{#VGNAME}]'
+              delay: '0'
+              value_type: FLOAT
+              units: B/s
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_metricVg_avg_read_bandwidth{IP="{$PST_IP}",volume_group_id="{#VGNAME}",appliance_id="{#APP_ID}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.volumegroup
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: 'performance volumegroup'
+            - uuid: 46c2142ce19d48d7a9145caaa7fc36a2
+              name: '({#APP_ID}) VG [{#VGNAME}]: Bandwidth Total'
+              type: DEPENDENT
+              key: 'powerstore.performance.vg.bandwidth.total[{#APP_ID}_{#VGNAME}]'
+              delay: '0'
+              value_type: FLOAT
+              units: B/s
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_metricVg_avg_total_bandwidth{IP="{$PST_IP}",volume_group_id="{#VGNAME}",appliance_id="{#APP_ID}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.volumegroup
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: 'performance volumegroup'
+            - uuid: 20c03a1760074713ad960da132fe15cb
+              name: '({#APP_ID}) VG [{#VGNAME}]: Bandwidth Write'
+              type: DEPENDENT
+              key: 'powerstore.performance.vg.bandwidth.write[{#APP_ID}_{#VGNAME}]'
+              delay: '0'
+              value_type: FLOAT
+              units: B/s
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_metricVg_avg_write_bandwidth{IP="{$PST_IP}",volume_group_id="{#VGNAME}",appliance_id="{#APP_ID}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.volumegroup
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: 'performance volumegroup'
+            - uuid: da75177cc5b34ff7acde019a7d87d019
+              name: '({#APP_ID}) VG [{#VGNAME}]: IOPS Read'
+              type: DEPENDENT
+              key: 'powerstore.performance.vg.iops.read[{#APP_ID}_{#VGNAME}]'
+              delay: '0'
+              value_type: FLOAT
+              units: iops
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_metricVg_avg_read_iops{IP="{$PST_IP}",volume_group_id="{#VGNAME}",appliance_id="{#APP_ID}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.volumegroup
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: 'performance volumegroup'
+            - uuid: 0d38778e0fec4218bec9e155ec5be18d
+              name: '({#APP_ID}) VG [{#VGNAME}]: IOPS Total'
+              type: DEPENDENT
+              key: 'powerstore.performance.vg.iops.total[{#APP_ID}_{#VGNAME}]'
+              delay: '0'
+              value_type: FLOAT
+              units: iops
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_metricVg_avg_total_iops{IP="{$PST_IP}",volume_group_id="{#VGNAME}",appliance_id="{#APP_ID}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.volumegroup
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: 'performance volumegroup'
+            - uuid: b44f79b8cd3e40c1aef333bfab9f5eff
+              name: '({#APP_ID}) VG [{#VGNAME}]: IOPS Write'
+              type: DEPENDENT
+              key: 'powerstore.performance.vg.iops.write[{#APP_ID}_{#VGNAME}]'
+              delay: '0'
+              value_type: FLOAT
+              units: iops
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_metricVg_avg_write_iops{IP="{$PST_IP}",volume_group_id="{#VGNAME}",appliance_id="{#APP_ID}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.volumegroup
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: 'performance volumegroup'
+            - uuid: b57b0e0b9b0e436b905b7ece07c1ada2
+              name: '({#APP_ID}) VG [{#VGNAME}]: Latency Total avg'
+              type: DEPENDENT
+              key: 'powerstore.performance.vg.latency.avg[{#APP_ID}_{#VGNAME}]'
+              delay: '0'
+              value_type: FLOAT
+              units: ms
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_metricVg_avg_latency{IP="{$PST_IP}",volume_group_id="{#VGNAME}",appliance_id="{#APP_ID}"}'
+                    - value
+                    - ''
+                - type: MULTIPLIER
+                  parameters:
+                    - '0.001'
+              master_item:
+                key: powerstore.volumegroup
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: 'performance volumegroup'
+            - uuid: e0b48bf5f3cd4d20a3714a15b8e0bc42
+              name: '({#APP_ID}) VG [{#VGNAME}]: Latency Read avg'
+              type: DEPENDENT
+              key: 'powerstore.performance.vg.latency.read.avg[{#APP_ID}_{#VGNAME}]'
+              delay: '0'
+              value_type: FLOAT
+              units: ms
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_metricVg_avg_read_latency{IP="{$PST_IP}",volume_group_id="{#VGNAME}",appliance_id="{#APP_ID}"}'
+                    - value
+                    - ''
+                - type: MULTIPLIER
+                  parameters:
+                    - '0.001'
+              master_item:
+                key: powerstore.volumegroup
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: 'performance volumegroup'
+            - uuid: e329ead881274bad83b33a89ab4f8569
+              name: '({#APP_ID}) VG [{#VGNAME}]: Latency Write avg'
+              type: DEPENDENT
+              key: 'powerstore.performance.vg.latency.write.avg[{#APP_ID}_{#VGNAME}]'
+              delay: '0'
+              value_type: FLOAT
+              units: ms
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_metricVg_avg_write_latency{IP="{$PST_IP}",volume_group_id="{#VGNAME}",appliance_id="{#APP_ID}"}'
+                    - value
+                    - ''
+                - type: MULTIPLIER
+                  parameters:
+                    - '0.001'
+              master_item:
+                key: powerstore.volumegroup
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: 'performance volumegroup'
+          master_item:
+            key: powerstore.volumegroup
+          lld_macro_paths:
+            - lld_macro: '{#APP_ID}'
+              path: '$.labels["appliance_id"]'
+            - lld_macro: '{#HELP}'
+              path: '$["help"]'
+            - lld_macro: '{#NAME}'
+              path: '$["name"]'
+            - lld_macro: '{#VGNAME}'
+              path: '$.labels["volume_group_id"]'
+          preprocessing:
+            - type: PROMETHEUS_TO_JSON
+              parameters:
+                - '{__name__=~"^powerstore_metricVg_avg_latency",IP="{$PST_IP}"}'
+        - uuid: 61ddb1904efc4e94908b6514cb82a211
+          name: 'PowerSupply Discovery'
+          type: DEPENDENT
+          key: powerstore.powersupply.discovery
+          delay: '0'
+          item_prototypes:
+            - uuid: af13808d0d964be9b4a4be283d1c270d
+              name: '({#APP_ID}) PowerSupply [{#PSNAME}]: Status'
+              type: DEPENDENT
+              key: 'powerstore.hardware.powersupply.status[{#APP_ID}_{#PSNAME}]'
+              delay: '0'
+              valuemap:
+                name: 'Hardware Status Value Mapping'
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_hardware_Power_Supply_state{IP="{$PST_IP}",appliance_id="{#APP_ID}",name="{#PSNAME}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.hardware
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: 'power supply'
+              trigger_prototypes:
+                - uuid: 812c15b282f044a1aa7707e678e81609
+                  expression: 'last(/Template API Storage Device EMC PowerStore Exporter/powerstore.hardware.powersupply.status[{#APP_ID}_{#PSNAME}])<>1'
+                  name: '({#APP_ID}) PowerSupply [{#PSNAME}] Status is abnormal'
+                  priority: WARNING
+                  manual_close: 'YES'
+          master_item:
+            key: powerstore.hardware
+          lld_macro_paths:
+            - lld_macro: '{#APP_ID}'
+              path: '$.labels["appliance_id"]'
+            - lld_macro: '{#HELP}'
+              path: '$["help"]'
+            - lld_macro: '{#NAME}'
+              path: '$["name"]'
+            - lld_macro: '{#PSNAME}'
+              path: '$.labels["name"]'
+          preprocessing:
+            - type: PROMETHEUS_TO_JSON
+              parameters:
+                - '{__name__=~"^powerstore_hardware_Power_Supply_state",IP="{$PST_IP}"}'
+        - uuid: 33de8a1aa42842b7a20f361c17b0cfa9
+          name: 'Volume Discovery'
+          type: DEPENDENT
+          key: powerstore.volume.discovery
+          delay: '0'
+          item_prototypes:
+            - uuid: 5e44610ff5554d4e9bbc9b4268952c2c
+              name: '({#APP_ID}) Volume [{#VOLUMENAME}]: Size'
+              type: DEPENDENT
+              key: 'powerstore.volume.size.[{#APP_ID}_{#VOLUMENAME}]'
+              delay: '0'
+              value_type: FLOAT
+              units: B
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_volume_size{IP="{$PST_IP}",name="{#VOLUMENAME}",appliance_id="{#APP_ID}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.volume
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: volume
+            - uuid: 528105ead9744010ab5063892d986a87
+              name: '({#APP_ID}) Volume [{#VOLUMENAME}]: State'
+              type: DEPENDENT
+              key: 'powerstore.volume.state.[{#APP_ID}_{#VOLUMENAME}]'
+              delay: '0'
+              valuemap:
+                name: 'Hardware Status Value Mapping'
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_volume_state{IP="{$PST_IP}",name="{#VOLUMENAME}",appliance_id="{#APP_ID}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.volume
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: volume
+              trigger_prototypes:
+                - uuid: 07157f92c9c945d2a73e99bf6c435b29
+                  expression: 'last(/Template API Storage Device EMC PowerStore Exporter/powerstore.volume.state.[{#APP_ID}_{#VOLUMENAME}])<>1'
+                  name: '({#APP_ID}) Volume [{#VOLUMENAME}]: Status is abnormal'
+                  priority: WARNING
+                  manual_close: 'YES'
+          master_item:
+            key: powerstore.volume
+          lld_macro_paths:
+            - lld_macro: '{#APP_ID}'
+              path: '$.labels["appliance_id"]'
+            - lld_macro: '{#HELP}'
+              path: '$["help"]'
+            - lld_macro: '{#NAME}'
+              path: '$["name"]'
+            - lld_macro: '{#VOLUMENAME}'
+              path: '$.labels["name"]'
+          preprocessing:
+            - type: PROMETHEUS_TO_JSON
+              parameters:
+                - '{__name__=~"^powerstore_volume_size",IP="{$PST_IP}"}'
+        - uuid: 32a61a345c714840828a8f4410d533ad
+          name: 'VolumeGroup Discovery'
+          type: DEPENDENT
+          key: powerstore.volumegroup.discovery
+          delay: '0'
+          item_prototypes:
+            - uuid: a6639593d2264ba08c1de00f756d1879
+              name: '({#APP_ID}) VG [{#VGNAME}]: Logical Provisioned'
+              type: DEPENDENT
+              key: 'volumegroup.logical.provisioned.[{#APP_ID}_{#VGNAME}]'
+              delay: '0'
+              value_type: FLOAT
+              units: B
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_volumegroup_logical_provisioned{IP="{$PST_IP}",name="{#VGNAME}",appliance_id="{#APP_ID}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.volumegroup
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: volumegroup
+            - uuid: 7f67338688524e088c6927c75fdade7c
+              name: '({#APP_ID}) VG [{#VGNAME}]: Logical Used'
+              type: DEPENDENT
+              key: 'volumegroup.logical.used.[{#APP_ID}_{#VGNAME}]'
+              delay: '0'
+              value_type: FLOAT
+              units: B
+              preprocessing:
+                - type: PROMETHEUS_PATTERN
+                  parameters:
+                    - 'powerstore_volumegroup_logical_used{IP="{$PST_IP}",name="{#VGNAME}",appliance_id="{#APP_ID}"}'
+                    - value
+                    - ''
+              master_item:
+                key: powerstore.volumegroup
+              tags:
+                - tag: Appliance
+                  value: '{#APP_ID}'
+                - tag: Application
+                  value: volumegroup
+          master_item:
+            key: powerstore.volumegroup
+          lld_macro_paths:
+            - lld_macro: '{#APP_ID}'
+              path: '$.labels["appliance_id"]'
+            - lld_macro: '{#HELP}'
+              path: '$["help"]'
+            - lld_macro: '{#NAME}'
+              path: '$["name"]'
+            - lld_macro: '{#VGNAME}'
+              path: '$.labels["name"]'
+          preprocessing:
+            - type: PROMETHEUS_TO_JSON
+              parameters:
+                - '{__name__=~"^powerstore_volumegroup_logical_provisioned",IP="{$PST_IP}"}'
+      macros:
+        - macro: '{$HOST_IP}'
+          value: 127.0.0.1
+          description: 'PowerStore Exporter Host IP'
+        - macro: '{$PORT}'
+          value: '9010'
+          description: 'PowerStore Exporter Port'
+        - macro: '{$PST_IP}'
+          value: 10.0.0.1
+          description: 'Powerstore Master IP'
+      valuemaps:
+        - uuid: 6b7d0a57fddb40f4bd7403f092dde7dd
+          name: 'Hardware Status Value Mapping'
+          mappings:
+            - value: '1'
+              newvalue: normal
+            - value: '0'
+              newvalue: abnormal
+        - uuid: de392f6811c64b8594dbd6d0ab7933ab
+          name: 'Port Link Value Mapping'
+          mappings:
+            - value: '1'
+              newvalue: 'true'
+            - value: '0'
+              newvalue: 'false'
