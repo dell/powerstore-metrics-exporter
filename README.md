@@ -3,7 +3,7 @@
 #### About
 # Metrics Exporter for Dell PowerStore
 
-This exporter collects metrics from multiple PowerStore systems using PowerStore's RESTful API. It supports Prometheus or Zabbix for data collection and Grafana for data visualization. This exporter has been tested with PowerStore REST API versions 1.0, 2.0, 3.5; Zabbix version 6.0LTS, Prometheus version 2.39.1, and Grafana version 9.3.8.
+This exporter collects metrics from multiple PowerStore systems using PowerStore's RESTful API. It supports Prometheus or Zabbix for data collection and Grafana for data visualization. This exporter has been tested with PowerStore REST API versions 1.0, 2.0, 3.5, 4.0; Zabbix version 6.0LTS, Prometheus version 2.39.1, and Grafana version 9.3.8.
 
 #### build
 This project is to be built using a Go environment.
