@@ -1,3 +1,19 @@
+/*
+ Copyright (c) 2024-2025 Dell Inc. or its subsidiaries. All Rights Reserved.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+*/
+
 package client
 
 import (
@@ -64,7 +80,7 @@ func (c *Client) GetPerf(id string) (string, error) {
 	var body = &RequestBody{
 		Entity:   "performance_metrics_by_appliance",
 		EntityID: id,
-		Interval: "Twenty_Sec",
+		Interval: "Five_Mins",
 	}
 	entityBody, err := json.Marshal(body)
 	if err != nil {
@@ -90,7 +106,7 @@ func (c *Client) GetMetricVg(id string) (string, error) {
 	var body = &RequestBody{
 		Entity:   "performance_metrics_by_vg",
 		EntityID: id,
-		Interval: "Twenty_Sec",
+		Interval: "Five_Mins",
 	}
 	entityBody, err := json.Marshal(body)
 	if err != nil {
@@ -103,7 +119,7 @@ func (c *Client) GetMetricVolume(id string) (string, error) {
 	var body = &RequestBody{
 		Entity:   "performance_metrics_by_volume",
 		EntityID: id,
-		Interval: "Twenty_Sec",
+		Interval: "Five_Mins",
 	}
 	entityBody, err := json.Marshal(body)
 	if err != nil {
@@ -116,7 +132,7 @@ func (c *Client) GetMetricFcPort(id string) (string, error) {
 	var body = &RequestBody{
 		Entity:   "performance_metrics_by_fe_fc_port",
 		EntityID: id,
-		Interval: "Twenty_Sec",
+		Interval: "Five_Mins",
 	}
 	entityBody, err := json.Marshal(body)
 	if err != nil {
@@ -129,7 +145,7 @@ func (c *Client) GetMetricEthPort(id string) (string, error) {
 	var body = &RequestBody{
 		Entity:   "performance_metrics_by_fe_eth_port",
 		EntityID: id,
-		Interval: "Twenty_Sec",
+		Interval: "Five_Mins",
 	}
 	entityBody, err := json.Marshal(body)
 	if err != nil {
@@ -142,7 +158,7 @@ func (c *Client) GetMetricAppliance(id string) (string, error) {
 	var body = &RequestBody{
 		Entity:   "performance_metrics_by_appliance",
 		EntityID: id,
-		Interval: "Twenty_Sec",
+		Interval: "Five_Mins",
 	}
 	entityBody, err := json.Marshal(body)
 	if err != nil {
@@ -155,7 +171,7 @@ func (c *Client) GetWearMetricByDrive(id string) (string, error) {
 	var body = &RequestBody{
 		Entity:   "wear_metrics_by_drive",
 		EntityID: id,
-		Interval: "Twenty_Sec",
+		Interval: "Five_Mins",
 	}
 	entityBody, err := json.Marshal(body)
 	if err != nil {
@@ -168,7 +184,7 @@ func (c *Client) GetMetricByNas(id string) (string, error) {
 	var body = &RequestBody{
 		Entity:   "performance_metrics_by_nas_server",
 		EntityID: id,
-		Interval: "Twenty_Sec",
+		Interval: "Five_Mins",
 	}
 	entityBody, err := json.Marshal(body)
 	if err != nil {
@@ -181,7 +197,7 @@ func (c *Client) GetFilesystemCap(id string) (string, error) {
 	var body = &RequestBody{
 		Entity:   "space_metrics_by_file_system",
 		EntityID: id,
-		Interval: "Twenty_Sec",
+		Interval: "Five_Mins",
 	}
 	entityBody, err := json.Marshal(body)
 	if err != nil {
@@ -194,7 +210,7 @@ func (c *Client) GetMetricsFilesystem(id string) (string, error) {
 	var body = &RequestBody{
 		Entity:   "performance_metrics_by_file_system",
 		EntityID: id,
-		Interval: "Twenty_Sec",
+		Interval: "Five_Mins",
 	}
 	entityBody, err := json.Marshal(body)
 	if err != nil {
