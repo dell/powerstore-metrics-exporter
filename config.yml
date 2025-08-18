@@ -1,5 +1,6 @@
 exporter:
   port: 9010
+  reqLimit: 200
 log:
   # type is [logfmt or json]
   type: logfmt
@@ -10,7 +11,9 @@ storageList:
     user: your-first-powerstore-username
     password: your-first-powerstore-password
     apiVersion: v1
+    apiLimit: 5000
   - ip: 10.0.0.2
     user: your-second-powerstore-username
     password: your-second-powerstore-password
     apiVersion: v1
+    apiLimit: 5000

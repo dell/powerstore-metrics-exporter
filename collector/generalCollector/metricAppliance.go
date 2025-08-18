@@ -1,27 +1,14 @@
-/*
- Copyright (c) 2023-2024 Dell Inc. or its subsidiaries. All Rights Reserved.
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
-     http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
-*/
-
 package generalCollector
 
 import (
+	"powerstore-metrics-exporter/collector/client"
+	"sync"
+	"time"
+
 	"github.com/go-kit/log"
 	"github.com/go-kit/log/level"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/tidwall/gjson"
-	"powerstore/collector/client"
 )
 
 var metricAppliancePerfCollectorMetric = []string{
@@ -35,20 +22,26 @@ var metricAppliancePerfCollectorMetric = []string{
 	"avg_write_iops",
 	"avg_write_bandwidth",
 	"avg_io_workload_cpu_utilization",
+	"avg_io_size",
+	"avg_read_size",
+	"avg_write_size",
 }
 
 // performance description
 var metricAppliancePerfDescMap = map[string]string{
-	"avg_read_latency":                "avg latency of read , unit is ms",
-	"avg_latency":                     "avg latency , unit is ms",
-	"avg_write_latency":               "avg latency of write , unit is ms",
-	"avg_read_iops":                   "iops of read , unit is iops",
-	"avg_read_bandwidth":              "throughput of read , unit is bps",
-	"avg_total_iops":                  "iops total , unit is iops",
-	"avg_total_bandwidth":             "total throughput , unit is bps",
-	"avg_write_iops":                  "iops of write , unit is iops",
-	"avg_write_bandwidth":             "throughput of write , unit is bps",
-	"avg_io_workload_cpu_utilization": "usage of CPU for IO workload ",
+	"avg_read_latency":                "Average read latency in microseconds,unit is ms",
+	"avg_latency":                     "Average read and write latency in microseconds,unit is ms",
+	"avg_write_latency":               "Average write latency in microseconds,unit is ms",
+	"avg_read_iops":                   "Total read operations per second,unit is iops",
+	"avg_read_bandwidth":              "Read rate in bytes per second,unit is bps",
+	"avg_total_iops":                  "Total read and write operations per second,unit is iops",
+	"avg_total_bandwidth":             "Total data transfer rate in bytes per second,unit is bps",
+	"avg_write_iops":                  "Total write operations per second,unit is iops",
+	"avg_write_bandwidth":             "Write rate in bytes per second,unit is bps",
+	"avg_io_workload_cpu_utilization": "The percentage of CPU Utilization on the cores dedicated to servicing storage I/O requests.unit is %",
+	"avg_io_size":                     "Average size of read and write operations in bytes.unit is bytes",
+	"avg_write_size":                  "Average write size in bytes.unit is bytes",
+	"avg_read_size":                   "Average read size in bytes.unit is bytes",
 }
 
 type metricApplianceCollector struct {
@@ -67,25 +60,31 @@ func NewMetricApplianceCollector(api *client.Client, logger log.Logger) *metricA
 }
 
 func (c *metricApplianceCollector) Collect(ch chan<- prometheus.Metric) {
+	level.Info(c.logger).Log("msg", "Start collecting appliance performance data")
+	startTime := time.Now()
+	var wg sync.WaitGroup
 	applianceArray := client.PowerstoreModuleID[c.client.IP]
-	for _, applianceID := range gjson.Parse(applianceArray["appliance"]).Array() {
-		id := applianceID.Get("id").String()
-		perfData, err := c.client.GetPerf(id)
-		if err != nil {
-			level.Warn(c.logger).Log("msg", "get appliance performance data error", "err", err)
-			continue
-		}
-		appliancePerformanceArray := gjson.Parse(perfData).Array()
-		appliancePerformance := appliancePerformanceArray[len(appliancePerformanceArray)-1]
-		for _, metricName := range metricAppliancePerfCollectorMetric {
-			metricValue := appliancePerformance.Get(metricName)
-			metricDesc := c.metrics["appliance"+"_"+metricName]
-			if metricValue.Exists() && metricValue.Type != gjson.Null {
-				ch <- prometheus.MustNewConstMetric(metricDesc, prometheus.GaugeValue, metricValue.Float(), id)
+	for applianceID, applianceName := range applianceArray["appliance"] {
+		wg.Add(1)
+		go func(applianceID, applianceName string) {
+			defer wg.Done()
+			perfData, err := c.client.GetPerf(applianceID)
+			if err != nil {
+				level.Warn(c.logger).Log("msg", "get appliance performance data error", "err", err)
 			}
-		}
+			appliancePerformanceArray := gjson.Parse(perfData).Array()
+			appliancePerformance := appliancePerformanceArray[len(appliancePerformanceArray)-1]
+			for _, metricName := range metricAppliancePerfCollectorMetric {
+				metricValue := appliancePerformance.Get(metricName)
+				metricDesc := c.metrics["appliance"+"_"+metricName]
+				if metricValue.Exists() && metricValue.Type != gjson.Null {
+					ch <- prometheus.MustNewConstMetric(metricDesc, prometheus.GaugeValue, metricValue.Float(), applianceID, applianceName)
+				}
+			}
+		}(applianceID, applianceName.String())
 	}
-
+	wg.Wait()
+	level.Info(c.logger).Log("msg", "Obtaining the performance appliance is successful", "time", time.Since(startTime))
 }
 
 func (c *metricApplianceCollector) Describe(ch chan<- *prometheus.Desc) {
@@ -100,7 +99,7 @@ func getMetricApplianceMetrics(ip string) map[string]*prometheus.Desc {
 		res["appliance"+"_"+metricName] = prometheus.NewDesc(
 			"powerstore_perf_"+metricName,
 			getMetricApplianceDescByType(metricName),
-			[]string{"appliance_id"},
+			[]string{"appliance_id", "appliance_name"},
 			prometheus.Labels{"IP": ip})
 	}
 	return res

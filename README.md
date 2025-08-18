@@ -9,14 +9,14 @@ This exporter collects metrics from multiple PowerStore systems using PowerStore
 This project is to be built using a Go environment.
 
 ```
-cd PowerStoreExporter
-go build -o PowerStoreExporter
+cd powerstore-metrics-exporter
+go build -o powerstore-metrics-exporter
 ```
 #### Run
 The exporter config file is ./config.yml and can be changed to point to another port other than the default of 9010. It is strongly recommended to create an operator user role in PowerStore, then update the storeageList section with the IP address and username/password details of the PowerStore(s).
 
 ```
-./PowerStoreExporter -c config.yml
+./powerstore-metrics-exporter -c config.yml
 ```
 
 

@@ -1,27 +1,14 @@
-/*
- Copyright (c) 2023-2024 Dell Inc. or its subsidiaries. All Rights Reserved.
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
-     http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
-*/
-
 package generalCollector
 
 import (
+	"powerstore-metrics-exporter/collector/client"
+	"sync"
+	"time"
+
 	"github.com/go-kit/log"
 	"github.com/go-kit/log/level"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/tidwall/gjson"
-	"powerstore/collector/client"
 )
 
 var metricVolumeCollectorMetric = []string{
@@ -34,18 +21,24 @@ var metricVolumeCollectorMetric = []string{
 	"avg_total_bandwidth",
 	"avg_write_iops",
 	"avg_write_bandwidth",
+	"avg_io_size",
+	"avg_read_size",
+	"avg_write_size",
 }
 
 var metricMetricVolumeDescMap = map[string]string{
-	"avg_read_latency":    "avg latency time of read,unit is ms",
-	"avg_latency":         "avg latency time,unit is ms",
-	"avg_write_latency":   "avg latency time of write,unit is ms",
-	"avg_read_iops":       "iops of read,unit is iops",
-	"avg_read_bandwidth":  "bandwidth of read,unit is bps",
-	"avg_total_iops":      "total iops,unit is iops",
-	"avg_total_bandwidth": "total bandwidth,unit is bps",
-	"avg_write_iops":      "iops of write,unit is iops",
-	"avg_write_bandwidth": "bandwidth of write,unit is bps",
+	"avg_read_latency":    "Average read latency in microseconds,unit is ms",
+	"avg_latency":         "Average read and write latency in microseconds,unit is ms",
+	"avg_write_latency":   "Average write latency in microseconds,unit is ms",
+	"avg_read_iops":       "Total read operations per second,unit is iops",
+	"avg_read_bandwidth":  "Read rate in bytes per second,unit is bps",
+	"avg_total_iops":      "Total read and write operations per second,unit is iops",
+	"avg_total_bandwidth": "Total data transfer rate in bytes per second,unit is bps",
+	"avg_write_iops":      "Total write operations per second,unit is iops",
+	"avg_write_bandwidth": "Write rate in bytes per second,unit is bps",
+	"avg_io_size":         "Average size of read and write operations in bytes.unit is bytes",
+	"avg_write_size":      "Average write size in bytes.unit is bytes",
+	"avg_read_size":       "Average read size in bytes.unit is bytes",
 }
 
 type metricVolumeCollector struct {
@@ -64,29 +57,37 @@ func NewMetricVolumeCollector(api *client.Client, logger log.Logger) *metricVolu
 }
 
 func (c *metricVolumeCollector) Collect(ch chan<- prometheus.Metric) {
+	level.Info(c.logger).Log("msg", "Start collecting volume performance data")
+	startTime := time.Now()
+	var wg sync.WaitGroup
 	volumeArray := client.PowerstoreModuleID[c.client.IP]
-	for _, volId := range gjson.Parse(volumeArray["volume"]).Array() {
-		id := volId.Get("id").String()
-		name := volId.Get("name").String()
-		metricVolData, err := c.client.GetMetricVolume(id)
-		if err != nil {
-			level.Warn(c.logger).Log("msg", "get volume performance data error", "err", err)
-			continue
-		}
-		volumeDataArray := gjson.Parse(metricVolData).Array()
-		if len(volumeDataArray) == 0 {
-			continue
-		}
-		volumeData := volumeDataArray[len(volumeDataArray)-1]
-		applianceID := volumeData.Get("appliance_id").String()
-		for _, metricName := range metricVolumeCollectorMetric {
-			metricValue := volumeData.Get(metricName)
-			metricDesc := c.metrics["volume"+"_"+metricName]
-			if metricValue.Exists() && metricValue.Type != gjson.Null {
-				ch <- prometheus.MustNewConstMetric(metricDesc, prometheus.GaugeValue, metricValue.Float(), name, applianceID)
+	for volumeId, volumeName := range volumeArray["volume"] {
+		wg.Add(1)
+		go func(volumeId, volumeName string) {
+			defer wg.Done()
+			metricVolData, err := c.client.GetMetricVolume(volumeId)
+			if err != nil {
+				level.Warn(c.logger).Log("msg", "get volume performance data error", "err", err)
+				return
 			}
-		}
+			volumeDataArray := gjson.Parse(metricVolData).Array()
+			if len(volumeDataArray) == 0 {
+				level.Warn(c.logger).Log("msg", "get volume performance data is null")
+				return
+			}
+			volumeData := volumeDataArray[len(volumeDataArray)-1]
+			applianceID := volumeData.Get("appliance_id").String()
+			for _, metricName := range metricVolumeCollectorMetric {
+				metricValue := volumeData.Get(metricName)
+				metricDesc := c.metrics["volume"+"_"+metricName]
+				if metricValue.Exists() && metricValue.Type != gjson.Null {
+					ch <- prometheus.MustNewConstMetric(metricDesc, prometheus.GaugeValue, metricValue.Float(), volumeName, applianceID)
+				}
+			}
+		}(volumeId, volumeName.String())
 	}
+	wg.Wait()
+	level.Info(c.logger).Log("msg", "Obtaining the performance volume is successful", "time", time.Since(startTime))
 }
 
 func (c *metricVolumeCollector) Describe(ch chan<- *prometheus.Desc) {

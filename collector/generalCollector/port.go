@@ -1,29 +1,15 @@
-/*
- Copyright (c) 2023-2024 Dell Inc. or its subsidiaries. All Rights Reserved.
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
-     http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
-*/
-
 package generalCollector
 
 import (
+	"powerstore-metrics-exporter/collector/client"
+	"strconv"
+	"strings"
+	"time"
+
 	"github.com/go-kit/log"
 	"github.com/go-kit/log/level"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/tidwall/gjson"
-	"powerstore/collector/client"
-	"strconv"
-	"strings"
 )
 
 var portTypes = []string{
@@ -42,8 +28,8 @@ var portStatusMetricMap = map[string]map[string]int{
 
 // port description
 var metricPortDescMap = map[string]string{
-	"is_link_up":    "this is is_link_up:true is 1,false is 0",
-	"current_speed": "this is current_speed,units is Gps",
+	"is_link_up":    "Indicates whether the port's link is up:true is 1,false is 0",
+	"current_speed": "Supported Ethernet front-end port transmission speeds,units is Gps",
 }
 
 type portCollector struct {
@@ -62,6 +48,8 @@ func NewPortCollector(api *client.Client, logger log.Logger) *portCollector {
 }
 
 func (c *portCollector) Collect(ch chan<- prometheus.Metric) {
+	level.Info(c.logger).Log("msg", "Start collecting port data")
+	startTime := time.Now()
 	for _, portType := range portTypes {
 		portTypeData, err := c.client.GetPort(portType)
 		if err != nil {
@@ -78,6 +66,7 @@ func (c *portCollector) Collect(ch chan<- prometheus.Metric) {
 			}
 		}
 	}
+	level.Info(c.logger).Log("msg", "Obtaining the port is successful", "time", time.Since(startTime))
 }
 
 func (c *portCollector) Describe(ch chan<- *prometheus.Desc) {

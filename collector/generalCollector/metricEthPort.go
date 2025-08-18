@@ -1,27 +1,14 @@
-/*
- Copyright (c) 2023-2024 Dell Inc. or its subsidiaries. All Rights Reserved.
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
-     http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
-*/
-
 package generalCollector
 
 import (
+	"powerstore-metrics-exporter/collector/client"
+	"sync"
+	"time"
+
 	"github.com/go-kit/log"
 	"github.com/go-kit/log/level"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/tidwall/gjson"
-	"powerstore/collector/client"
 )
 
 var metricEthPortCollectorMetric = []string{
@@ -60,29 +47,37 @@ func NewMetricEthPortCollector(api *client.Client, logger log.Logger) *metricEth
 }
 
 func (c *metricEthPortCollector) Collect(ch chan<- prometheus.Metric) {
+	level.Info(c.logger).Log("msg", "Start collecting ethPort performance data")
+	startTime := time.Now()
+	var wg sync.WaitGroup
 	ethPortArray := client.PowerstoreModuleID[c.client.IP]
-	for _, portId := range gjson.Parse(ethPortArray["ethport"]).Array() {
-		id := portId.Get("id").String()
-		name := portId.Get("name").String()
-		ethPortsData, err := c.client.GetMetricEthPort(id)
-		if err != nil {
-			level.Warn(c.logger).Log("msg", "get ethPort performance data error", "err", err)
-			continue
-		}
-		ethPortDataArray := gjson.Parse(ethPortsData).Array()
-		if len(ethPortDataArray) == 0 {
-			continue
-		}
-		ethPortData := ethPortDataArray[len(ethPortDataArray)-1]
-		applianceID := ethPortData.Get("appliance_id").String()
-		for _, metricName := range metricEthPortCollectorMetric {
-			metricValue := ethPortData.Get(metricName)
-			metricDesc := c.metrics["ethport"+"_"+metricName]
-			if metricValue.Exists() && metricValue.Type != gjson.Null {
-				ch <- prometheus.MustNewConstMetric(metricDesc, prometheus.GaugeValue, metricValue.Float(), name, applianceID)
+	for portId, portName := range ethPortArray["ethport"] {
+		wg.Add(1)
+		go func(portId, portName string) {
+			defer wg.Done()
+			ethPortsData, err := c.client.GetMetricEthPort(portId)
+			if err != nil {
+				level.Warn(c.logger).Log("msg", "get ethPort performance data error", "err", err)
+				return
 			}
-		}
+			ethPortDataArray := gjson.Parse(ethPortsData).Array()
+			if len(ethPortDataArray) == 0 {
+				level.Warn(c.logger).Log("msg", "get ethPort performance data is null")
+				return
+			}
+			ethPortData := ethPortDataArray[len(ethPortDataArray)-1]
+			applianceID := ethPortData.Get("appliance_id").String()
+			for _, metricName := range metricEthPortCollectorMetric {
+				metricValue := ethPortData.Get(metricName)
+				metricDesc := c.metrics["ethport"+"_"+metricName]
+				if metricValue.Exists() && metricValue.Type != gjson.Null {
+					ch <- prometheus.MustNewConstMetric(metricDesc, prometheus.GaugeValue, metricValue.Float(), portName, applianceID)
+				}
+			}
+		}(portId, portName.String())
 	}
+	wg.Wait()
+	level.Info(c.logger).Log("msg", "Obtaining the performance ethPort is successful", "time", time.Since(startTime))
 }
 
 func (c *metricEthPortCollector) Describe(ch chan<- *prometheus.Desc) {

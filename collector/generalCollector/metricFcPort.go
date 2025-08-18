@@ -1,27 +1,14 @@
-/*
- Copyright (c) 2023-2024 Dell Inc. or its subsidiaries. All Rights Reserved.
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
-     http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
-*/
-
 package generalCollector
 
 import (
+	"powerstore-metrics-exporter/collector/client"
+	"sync"
+	"time"
+
 	"github.com/go-kit/log"
 	"github.com/go-kit/log/level"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/tidwall/gjson"
-	"powerstore/collector/client"
 )
 
 var metricFcPortCollectorMetric = []string{
@@ -40,11 +27,11 @@ var metricFcPortCollectorMetric = []string{
 }
 
 var metricMetricFcPortDescMap = map[string]string{
-	"avg_read_latency":               "avg latency time of read,unit is ms",
-	"avg_latency":                    "avg latency time,unit is ms",
-	"avg_write_latency":              "avg latency time of write,unit is ms",
-	"avg_total_iops":                 "Total IOPS,unit is bps",
-	"avg_total_bandwidth":            "Total Bandwidth,unit is bps",
+	"avg_read_latency":               "Average read latency in microseconds,unit is ms",
+	"avg_latency":                    "Average read and write latency in microseconds,unit is ms",
+	"avg_write_latency":              "Average write latency in microseconds,unit is ms",
+	"avg_total_iops":                 "Total read and write operations per second,unit is iops",
+	"avg_total_bandwidth":            "Total data transfer rate in bytes per second,unit is bps",
 	"avg_dumped_frames_ps":           "count of dumped frames in a second",
 	"avg_loss_of_signal_count_ps":    "count of loss of signal in a second",
 	"avg_invalid_crc_count_ps":       "count of invalid useless in a second",
@@ -70,29 +57,37 @@ func NewMetricFcPortCollector(api *client.Client, logger log.Logger) *metricFcPo
 }
 
 func (c *metricFcPortCollector) Collect(ch chan<- prometheus.Metric) {
+	level.Info(c.logger).Log("msg", "Start collecting fcPort performance data")
+	startTime := time.Now()
+	var wg sync.WaitGroup
 	fcPortArray := client.PowerstoreModuleID[c.client.IP]
-	for _, portId := range gjson.Parse(fcPortArray["fcport"]).Array() {
-		id := portId.Get("id").String()
-		name := portId.Get("name").String()
-		fcPortsData, err := c.client.GetMetricFcPort(id)
-		if err != nil {
-			level.Warn(c.logger).Log("msg", "get fcPort performance data error", "err", err)
-			continue
-		}
-		fcPortDataArray := gjson.Parse(fcPortsData).Array()
-		if len(fcPortDataArray) == 0 {
-			continue
-		}
-		fcPortData := fcPortDataArray[len(fcPortDataArray)-1]
-		applianceID := fcPortData.Get("appliance_id").String()
-		for _, metricName := range metricFcPortCollectorMetric {
-			metricValue := fcPortData.Get(metricName)
-			metricDesc := c.metrics["fcport"+"_"+metricName]
-			if metricValue.Exists() && metricValue.Type != gjson.Null {
-				ch <- prometheus.MustNewConstMetric(metricDesc, prometheus.GaugeValue, metricValue.Float(), name, applianceID)
+	for portId, portName := range fcPortArray["fcport"] {
+		wg.Add(1)
+		go func(portId, portName string) {
+			defer wg.Done()
+			fcPortsData, err := c.client.GetMetricFcPort(portId)
+			if err != nil {
+				level.Warn(c.logger).Log("msg", "get fcPort performance data error", "err", err)
+				return
 			}
-		}
+			fcPortDataArray := gjson.Parse(fcPortsData).Array()
+			if len(fcPortDataArray) == 0 {
+				level.Warn(c.logger).Log("msg", "get fcPort performance data is null")
+				return
+			}
+			fcPortData := fcPortDataArray[len(fcPortDataArray)-1]
+			applianceID := fcPortData.Get("appliance_id").String()
+			for _, metricName := range metricFcPortCollectorMetric {
+				metricValue := fcPortData.Get(metricName)
+				metricDesc := c.metrics["fcport"+"_"+metricName]
+				if metricValue.Exists() && metricValue.Type != gjson.Null {
+					ch <- prometheus.MustNewConstMetric(metricDesc, prometheus.GaugeValue, metricValue.Float(), portName, applianceID)
+				}
+			}
+		}(portId, portName.String())
 	}
+	wg.Wait()
+	level.Info(c.logger).Log("msg", "Obtaining the performance fc port is successful", "time", time.Since(startTime))
 }
 
 func (c *metricFcPortCollector) Describe(ch chan<- *prometheus.Desc) {

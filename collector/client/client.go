@@ -1,32 +1,17 @@
-/*
- Copyright (c) 2023-2024 Dell Inc. or its subsidiaries. All Rights Reserved.
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
-     http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
-*/
-
 package client
 
 import (
 	"bytes"
 	"crypto/tls"
 	"errors"
-	"github.com/go-kit/log"
-	"github.com/go-kit/log/level"
 	"io"
 	"net"
 	"net/http"
-	"powerstore/utils"
+	"powerstore-metrics-exporter/utils"
 	"time"
+
+	"github.com/go-kit/log"
+	"github.com/go-kit/log/level"
 )
 
 type Client struct {
@@ -34,6 +19,7 @@ type Client struct {
 	username string
 	password string
 	version  string
+	limit    int
 	baseUrl  string
 	http     *http.Client
 	token    string
@@ -42,8 +28,14 @@ type Client struct {
 }
 
 func NewClient(config utils.Storage, logger log.Logger) (*Client, error) {
+	var limit int
 	if config.Ip == "" || config.User == "" || config.Password == "" || config.Version == "" {
 		return nil, errors.New("please check config file ,Some parameters are null")
+	}
+	if config.Limit == 0 {
+		limit = 5000
+	} else {
+		limit = config.Limit
 	}
 	baseUrl := "https://" + config.Ip + "/api/rest/"
 	var httpClient *http.Client
@@ -68,11 +60,12 @@ func NewClient(config utils.Storage, logger log.Logger) (*Client, error) {
 		username: config.User,
 		password: config.Password,
 		version:  config.Version,
+		limit:    limit,
 		baseUrl:  baseUrl,
 		http:     httpClient,
 		logger:   logger,
 	}
-	return client, nil
+	return client, client.InitLogin()
 }
 
 func (c *Client) InitLogin() error {
@@ -117,6 +110,9 @@ func (c *Client) getResource(method, uri, body string) (string, error) {
 	request.Header.Set("Content-Type", "application/json")
 	request.Header.Set("DELL-EMC-TOKEN", c.token)
 	request.Header.Set("Cookie", "auth_cookie="+c.cookie)
+
+	// Added parameters in Powerstore API 4.1.0
+	request.Header.Set("dell-visibility", "Internal")
 
 	response, err := c.http.Do(request)
 	if err != nil {

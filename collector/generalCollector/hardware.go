@@ -1,27 +1,13 @@
-/*
- Copyright (c) 2023-2024 Dell Inc. or its subsidiaries. All Rights Reserved.
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
-     http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
-*/
-
 package generalCollector
 
 import (
+	"powerstore-metrics-exporter/collector/client"
+	"time"
+
 	"github.com/go-kit/log"
 	"github.com/go-kit/log/level"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/tidwall/gjson"
-	"powerstore/collector/client"
 )
 
 var hardwareCollectorType = []string{
@@ -32,8 +18,8 @@ var hardwareCollectorType = []string{
 }
 
 var metricHardwareDescMap = map[string]string{
-	"size":            "disk size,unit is B",
-	"lifecycle_state": "drives status,Healthy is 1",
+	"size":            "Size of the drive in bytes,unit is B",
+	"lifecycle_state": "The lifecycle state of the Hardware,Healthy is 1",
 }
 
 var metricHardwareValueMap = map[string]map[string]int{
@@ -56,9 +42,11 @@ func NewHardwareCollector(api *client.Client, logger log.Logger) *hardwareCollec
 }
 
 func (c *hardwareCollector) Collect(ch chan<- prometheus.Metric) {
+	level.Info(c.logger).Log("msg", "Start collecting hardware data")
+	startTime := time.Now()
 	nodeData, err := c.client.GetHardware("Node")
 	if err != nil {
-		level.Warn(c.logger).Log("msg", "get hardware data error", "err", err)
+		level.Warn(c.logger).Log("msg", "get node data error", "err", err)
 		return
 	}
 	for _, node := range gjson.Parse(nodeData).Array() {
@@ -66,12 +54,12 @@ func (c *hardwareCollector) Collect(ch chan<- prometheus.Metric) {
 		nodeName := node.Get("name").String()
 		sn := node.Get("serial_number").String()
 		state := node.Get("lifecycle_state").String()
-		metricDesc := c.metrics["node"+id]
 		if node.Exists() && node.Type != gjson.Null {
+			metricDesc := c.metrics["node"+id]
 			ch <- prometheus.MustNewConstMetric(metricDesc, prometheus.GaugeValue, 0, nodeName, sn, state, id)
 		}
 	}
-
+	level.Info(c.logger).Log("msg", "Obtaining the node status is successful")
 	for _, types := range hardwareCollectorType {
 		hardwareData, err := c.client.GetHardware(types)
 		if err != nil {
@@ -82,17 +70,20 @@ func (c *hardwareCollector) Collect(ch chan<- prometheus.Metric) {
 			name := hardware.Get("name").String()
 			state := hardware.Get("lifecycle_state")
 			stateValue := getHardwareFloatDate("lifecycle_state", state)
-			metricDesc := c.metrics[types+"state"]
 			if state.Exists() && state.Type != gjson.Null {
+				metricDesc := c.metrics[types+"state"]
 				ch <- prometheus.MustNewConstMetric(metricDesc, prometheus.GaugeValue, stateValue, name, id)
 			}
-			size := hardware.Get("extra_details").Get("size")
-			metricDesc = c.metrics["size"]
-			if size.Exists() && size.Type != gjson.Null {
-				ch <- prometheus.MustNewConstMetric(metricDesc, prometheus.GaugeValue, size.Float(), name, id, hardware.Get("extra_details").Get("drive_type").String())
+			if hardware.Get("type").String() == "Drive" {
+				size := hardware.Get("extra_details").Get("size")
+				if size.Exists() && size.Type != gjson.Null {
+					metricDesc := c.metrics["size"]
+					ch <- prometheus.MustNewConstMetric(metricDesc, prometheus.GaugeValue, size.Float(), name, id, hardware.Get("extra_details").Get("drive_type").String())
+				}
 			}
 		}
 	}
+	level.Info(c.logger).Log("msg", "Obtaining the hardware status is successful", "time", time.Since(startTime))
 }
 
 func (c *hardwareCollector) Describe(ch chan<- *prometheus.Desc) {
@@ -130,8 +121,8 @@ func getHardwareMetrics(ip string) map[string]*prometheus.Desc {
 			prometheus.Labels{"IP": ip})
 	}
 
-	for _, id := range gjson.Parse(client.PowerstoreModuleID[ip]["appliance"]).Array() {
-		res["node"+id.Get("id").String()] = prometheus.NewDesc(
+	for applianceID, _ := range client.PowerstoreModuleID[ip]["appliance"] {
+		res["node"+applianceID] = prometheus.NewDesc(
 			"powerstore_hardware_node_state",
 			getHardwareDescByType("lifecycle_state"),
 			[]string{"name", "serial_number", "state", "appliance_id"},

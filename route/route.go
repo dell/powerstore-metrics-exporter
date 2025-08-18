@@ -1,32 +1,17 @@
-/*
- Copyright (c) 2023-2024 Dell Inc. or its subsidiaries. All Rights Reserved.
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
-     http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
-*/
-
 package route
 
 import (
 	"fmt"
+	"powerstore-metrics-exporter/collector/client"
+	"powerstore-metrics-exporter/collector/generalCollector"
+	"powerstore-metrics-exporter/utils"
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 	"github.com/go-kit/log"
 	"github.com/go-kit/log/level"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"powerstore/collector/client"
-	"powerstore/collector/generalCollector"
-	"powerstore/utils"
-	"strconv"
 )
 
 func Run(config *utils.Config, logger log.Logger) {
@@ -56,6 +41,7 @@ func Run(config *utils.Config, logger log.Logger) {
 		PortRegistry.MustRegister(generalCollector.NewMetricFcPortCollector(client, logger))
 		PortRegistry.MustRegister(generalCollector.NewMetricEthPortCollector(client, logger))
 		FileSystemRegistry.MustRegister(generalCollector.NewFileCollector(client, logger))
+		FileSystemRegistry.MustRegister(generalCollector.NewMetricFilesystemCollector(client, logger))
 		HardwareRegistry.MustRegister(generalCollector.NewHardwareCollector(client, logger))
 		HardwareRegistry.MustRegister(generalCollector.NewWearMetricCollector(client, logger))
 		VolumeRegistry.MustRegister(generalCollector.NewVolumeCollector(client, logger))
@@ -63,6 +49,7 @@ func Run(config *utils.Config, logger log.Logger) {
 		ApplianceRegistry.MustRegister(generalCollector.NewApplianceCollector(client, logger))
 		ApplianceRegistry.MustRegister(generalCollector.NewMetricApplianceCollector(client, logger))
 		NasRegistry.MustRegister(generalCollector.NewNasCollector(client, logger))
+		NasRegistry.MustRegister(generalCollector.NewMetricNasCollector(client, logger))
 		VolumeGroupRegistry.MustRegister(generalCollector.NewVolumeGroupCollector(client, logger))
 		VolumeGroupRegistry.MustRegister(generalCollector.NewMetricVgCollector(client, logger))
 		CapacityRegistry.MustRegister(generalCollector.NewCapacityCollector(client, logger))
@@ -79,6 +66,7 @@ func Run(config *utils.Config, logger log.Logger) {
 			metricsGroup.GET("volumeGroup", utils.PrometheusHandler(VolumeGroupRegistry, logger))
 			metricsGroup.GET("capacity", utils.PrometheusHandler(CapacityRegistry, logger))
 		}
+		level.Info(logger).Log("msg", "The Powerstore is ready", "ip", storage.Ip)
 	}
 
 	// exporter Performance
@@ -89,6 +77,7 @@ func Run(config *utils.Config, logger log.Logger) {
 
 	httpPort := fmt.Sprintf(":%s", strconv.Itoa(config.Exporter.Port))
 	level.Info(logger).Log("msg", "~~~~~~~~~~~~~Start PowerStore Exporter~~~~~~~~~~~~~~")
+	level.Info(logger).Log("http-port", httpPort)
 	err := r.Run(httpPort)
 	if err != nil {
 		level.Error(logger).Log("msg", "Service startup failed", "err", err)

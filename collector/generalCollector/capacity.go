@@ -1,27 +1,13 @@
-/*
- Copyright (c) 2023-2024 Dell Inc. or its subsidiaries. All Rights Reserved.
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
-     http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
-*/
-
 package generalCollector
 
 import (
+	"powerstore-metrics-exporter/collector/client"
+	"time"
+
 	"github.com/go-kit/log"
 	"github.com/go-kit/log/level"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/tidwall/gjson"
-	"powerstore/collector/client"
 )
 
 var capCollectorMetric = []string{
@@ -48,26 +34,26 @@ var capCollectorMetric = []string{
 }
 
 var metricCapDescMap = map[string]string{
-	"last_logical_provisioned": "last logical provisioned,unit is B",
-	"last_logical_used":        "last logical has been used,unit is B",
-	"last_physical_total":      "total last physical ,unit is B",
-	"last_physical_used":       "last physical has been used ,unit is B",
-	"max_logical_provisioned":  "max logical provisioned,unit is B",
-	"max_logical_used":         "max used logical,unit is B",
-	"max_physical_total":       "max total physical ,unit is B",
-	"max_physical_used":        "max used physical,unit is B",
-	"last_data_physical_used":  "last data used physical,unit is B",
-	"max_data_physical_used":   "max used data physical used,unit is B",
-	"last_efficiency_ratio":    "last efficiency ratio,:1",
-	"last_data_reduction":      "last data reduction",
-	"last_snapshot_savings":    "last snapshot savings",
-	"last_thin_savings":        "last thin savings",
-	"max_efficiency_ratio":     "max efficiency ratio :1",
-	"max_data_reduction":       "max data reduction,unit is B",
-	"max_snapshot_savings":     "max snapshot savings",
-	"max_thin_savings":         "max thin savings",
-	"last_shared_logical_used": "last shared logical used,unit is B",
-	"max_shared_logical_used":  "max shared logical used,unit is B",
+	"last_logical_provisioned": "Last logical total space during the period,unit is B",
+	"last_logical_used":        "Last logical used space during the period,unit is B",
+	"last_physical_total":      "Last physical total space during the period,unit is B",
+	"last_physical_used":       "Last physical used space during the period,unit is B",
+	"max_logical_provisioned":  "Maxiumum logical total space during the period,unit is B",
+	"max_logical_used":         "Maxiumum logical used space during the period,unit is B",
+	"max_physical_total":       "Maximum physical total space during the period,unit is B",
+	"max_physical_used":        "Maximum physical used space during the period,unit is B",
+	"last_data_physical_used":  "Last physical used space for data during the period,unit is B",
+	"max_data_physical_used":   "Maximum physical used space for data during the period,unit is B",
+	"last_efficiency_ratio":    "Last efficiency ratio during the period.",
+	"last_data_reduction":      "Last data reduction space during the period.unit is B",
+	"last_snapshot_savings":    "Last snapshot savings space during the period.",
+	"last_thin_savings":        "Last thin savings ratio during the period.",
+	"max_efficiency_ratio":     "Maximum efficiency ratio during the period.",
+	"max_data_reduction":       "Maximum data reduction space during the period,unit is B",
+	"max_snapshot_savings":     "Maximum snapshot savings space during the period.",
+	"max_thin_savings":         "Maximum thin savings ratio during the period.",
+	"last_shared_logical_used": "Last shared logical used during the period,unit is B",
+	"max_shared_logical_used":  "Max shared logical used during the period,unit is B",
 }
 
 type capacityCollector struct {
@@ -86,10 +72,11 @@ func NewCapacityCollector(api *client.Client, logger log.Logger) *capacityCollec
 }
 
 func (c *capacityCollector) Collect(ch chan<- prometheus.Metric) {
+	level.Info(c.logger).Log("msg", "Start collecting capacity data")
+	startTime := time.Now()
 	applianceArray := client.PowerstoreModuleID[c.client.IP]
-	for _, applianceID := range gjson.Parse(applianceArray["appliance"]).Array() {
-		id := applianceID.Get("id").String()
-		capacityData, err := c.client.GetCap(id)
+	for applianceID, _ := range applianceArray["appliance"] {
+		capacityData, err := c.client.GetCap(applianceID)
 		if err != nil {
 			level.Warn(c.logger).Log("msg", "get capacity data error", "err", err)
 			return
@@ -105,7 +92,7 @@ func (c *capacityCollector) Collect(ch chan<- prometheus.Metric) {
 			}
 		}
 	}
-
+	level.Info(c.logger).Log("msg", "Obtaining the cluster capacity is successful", "time", time.Since(startTime))
 }
 
 func (c *capacityCollector) Describe(ch chan<- *prometheus.Desc) {

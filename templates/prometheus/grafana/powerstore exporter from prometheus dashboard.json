@@ -153,6 +153,41 @@
                 "value": "color-background"
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Master Appliance"
+            },
+            "properties": [
+              {
+                "id": "custom.width"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "CPU Utilization"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "percent"
+              },
+              {
+                "id": "custom.displayMode",
+                "value": "gradient-gauge"
+              },
+              {
+                "id": "min",
+                "value": 0
+              },
+              {
+                "id": "max",
+                "value": 100
+              }
+            ]
           }
         ]
       },
@@ -172,12 +207,7 @@
           "show": false
         },
         "showHeader": true,
-        "sortBy": [
-          {
-            "desc": true,
-            "displayName": "{IP=\"10.0.0.1\", __name__=\"powerstore_cluster\", global_id=\"abcdefghijklmn\", instance=\"10.0.0.1:9012\", job=\"powerstore_10.0.0.1__cluster\", management_address=\"10.0.0.1\", master_appliance_id=\"A\", name=\"10.0.0.1\"}"
-          }
-        ]
+        "sortBy": []
       },
       "pluginVersion": "9.3.8",
       "targets": [
@@ -300,6 +330,21 @@
           "legendFormat": "__auto",
           "range": false,
           "refId": "H"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "jU5gl8iSz"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "last_over_time(powerstore_perf_avg_io_workload_cpu_utilization{IP=\"$IP\"}[1h])*100",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "legendFormat": "__auto",
+          "range": false,
+          "refId": "I"
         }
       ],
       "title": "Cluster Information",
@@ -313,13 +358,14 @@
                 "global_id",
                 "master_appliance_id",
                 "name",
+                "Value #A",
                 "service_tag",
                 "Value #D",
                 "Value #E",
                 "Value #F",
                 "Value #G",
                 "Value #H",
-                "Value #A"
+                "Value #I"
               ]
             }
           }
@@ -335,11 +381,12 @@
             "indexByName": {
               "IP": 1,
               "Value #A": 2,
-              "Value #D": 10,
-              "Value #E": 8,
-              "Value #F": 6,
-              "Value #G": 7,
-              "Value #H": 9,
+              "Value #D": 11,
+              "Value #E": 9,
+              "Value #F": 7,
+              "Value #G": 8,
+              "Value #H": 10,
+              "Value #I": 6,
               "global_id": 4,
               "master_appliance_id": 3,
               "name": 0,
@@ -356,6 +403,7 @@
               "Value #F": "Physical Used Size",
               "Value #G": "Physical Size",
               "Value #H": "Logical Used Size",
+              "Value #I": "CPU Utilization",
               "global_id": "Global ID",
               "master_appliance_id": "Master Appliance",
               "name": "ClusterName",
@@ -427,7 +475,7 @@
       },
       "gridPos": {
         "h": 7,
-        "w": 8,
+        "w": 12,
         "x": 0,
         "y": 5
       },
@@ -516,15 +564,111 @@
               }
             ]
           },
+          "unit": "binBps"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 5
+      },
+      "id": 26,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "jU5gl8iSz"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "powerstore_perf_avg_total_bandwidth{IP=\"$IP\"}",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "B"
+        }
+      ],
+      "title": "Powerstore Appliance Bandwidth",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "jU5gl8iSz"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
           "unit": "iops"
         },
         "overrides": []
       },
       "gridPos": {
         "h": 7,
-        "w": 8,
-        "x": 8,
-        "y": 5
+        "w": 12,
+        "x": 0,
+        "y": 12
       },
       "id": 28,
       "options": {
@@ -612,17 +756,17 @@
               }
             ]
           },
-          "unit": "binBps"
+          "unit": "bytes"
         },
         "overrides": []
       },
       "gridPos": {
         "h": 7,
-        "w": 8,
-        "x": 16,
-        "y": 5
+        "w": 12,
+        "x": 12,
+        "y": 12
       },
-      "id": 26,
+      "id": 63,
       "options": {
         "legend": {
           "calcs": [],
@@ -643,7 +787,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "powerstore_perf_avg_total_bandwidth{IP=\"$IP\"}",
+          "expr": "powerstore_perf_avg_io_size{IP=\"$IP\"}",
           "hide": false,
           "instant": false,
           "legendFormat": "__auto",
@@ -651,7 +795,7 @@
           "refId": "B"
         }
       ],
-      "title": "Powerstore Appliance Bandwidth",
+      "title": "Powerstore Appliance IO Size",
       "type": "timeseries"
     },
     {
@@ -660,7 +804,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 12
+        "y": 19
       },
       "id": 46,
       "panels": [],
@@ -712,8 +856,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -729,7 +872,7 @@
         "h": 7,
         "w": 8,
         "x": 0,
-        "y": 13
+        "y": 20
       },
       "id": 10,
       "options": {
@@ -807,8 +950,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -824,7 +966,7 @@
         "h": 7,
         "w": 8,
         "x": 8,
-        "y": 13
+        "y": 20
       },
       "id": 12,
       "options": {
@@ -902,8 +1044,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -919,7 +1060,7 @@
         "h": 7,
         "w": 8,
         "x": 16,
-        "y": 13
+        "y": 20
       },
       "id": 14,
       "options": {
@@ -1016,7 +1157,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 20
+        "y": 27
       },
       "id": 34,
       "options": {
@@ -1271,7 +1412,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 28
+        "y": 35
       },
       "id": 22,
       "options": {
@@ -1467,7 +1608,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 37
+        "y": 44
       },
       "id": 44,
       "panels": [],
@@ -1529,9 +1670,9 @@
       },
       "gridPos": {
         "h": 7,
-        "w": 8,
+        "w": 12,
         "x": 0,
-        "y": 38
+        "y": 45
       },
       "id": 36,
       "options": {
@@ -1608,6 +1749,95 @@
             "steps": [
               {
                 "color": "green"
+              }
+            ]
+          },
+          "unit": "binBps"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 45
+      },
+      "id": 38,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "jU5gl8iSz"
+          },
+          "editorMode": "code",
+          "expr": "powerstore_metricVolume_avg_write_bandwidth{IP=\"$IP\",appliance_id=\"$Appliance\"} + powerstore_metricVolume_avg_read_bandwidth{IP=\"$IP\",appliance_id=\"$Appliance\"}",
+          "hide": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "C"
+        }
+      ],
+      "title": "[$Appliance]  Volume Total Bandwidth",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "jU5gl8iSz"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1621,9 +1851,9 @@
       },
       "gridPos": {
         "h": 7,
-        "w": 8,
-        "x": 8,
-        "y": 38
+        "w": 12,
+        "x": 0,
+        "y": 52
       },
       "id": 40,
       "options": {
@@ -1703,20 +1933,24 @@
             "steps": [
               {
                 "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
               }
             ]
           },
-          "unit": "binBps"
+          "unit": "bytes"
         },
         "overrides": []
       },
       "gridPos": {
         "h": 7,
-        "w": 8,
-        "x": 16,
-        "y": 38
+        "w": 12,
+        "x": 12,
+        "y": 52
       },
-      "id": 38,
+      "id": 64,
       "options": {
         "legend": {
           "calcs": [],
@@ -1736,14 +1970,16 @@
             "uid": "jU5gl8iSz"
           },
           "editorMode": "code",
-          "expr": "powerstore_metricVolume_avg_write_bandwidth{IP=\"$IP\",appliance_id=\"$Appliance\"} + powerstore_metricVolume_avg_read_bandwidth{IP=\"$IP\",appliance_id=\"$Appliance\"}",
+          "exemplar": false,
+          "expr": "powerstore_metricVolume_avg_io_size{IP=\"$IP\",appliance_id=\"$Appliance\"}",
           "hide": false,
+          "instant": false,
           "legendFormat": "__auto",
           "range": true,
-          "refId": "C"
+          "refId": "B"
         }
       ],
-      "title": "[$Appliance]  Volume Total Bandwidth",
+      "title": "[$Appliance] Volume Total IO Size",
       "type": "timeseries"
     },
     {
@@ -1868,7 +2104,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 45
+        "y": 59
       },
       "id": 6,
       "options": {
@@ -1993,7 +2229,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 52
+        "y": 66
       },
       "id": 54,
       "panels": [],
@@ -2058,10 +2294,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
-        "w": 8,
+        "h": 7,
+        "w": 12,
         "x": 0,
-        "y": 53
+        "y": 67
       },
       "id": 52,
       "options": {
@@ -2090,98 +2326,6 @@
         }
       ],
       "title": "[$Appliance] Volume Group  latency",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "jU5gl8iSz"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "hue",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green"
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "iops"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 8,
-        "x": 8,
-        "y": 53
-      },
-      "id": 55,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": false
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "jU5gl8iSz"
-          },
-          "editorMode": "code",
-          "expr": "powerstore_metricVg_avg_total_iops{IP=\"$IP\",appliance_id=\"$Appliance\"}",
-          "legendFormat": "__auto",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "[$Appliance] Volume Group  IOPS",
       "type": "timeseries"
     },
     {
@@ -2242,10 +2386,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
-        "w": 8,
-        "x": 16,
-        "y": 53
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 67
       },
       "id": 56,
       "options": {
@@ -2274,6 +2418,190 @@
         }
       ],
       "title": "[$Appliance] Volume Group Bandwidth",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "jU5gl8iSz"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "hue",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "iops"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 74
+      },
+      "id": 55,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "jU5gl8iSz"
+          },
+          "editorMode": "code",
+          "expr": "powerstore_metricVg_avg_total_iops{IP=\"$IP\",appliance_id=\"$Appliance\"}",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "[$Appliance] Volume Group  IOPS",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "jU5gl8iSz"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "hue",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 74
+      },
+      "id": 65,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "jU5gl8iSz"
+          },
+          "editorMode": "code",
+          "expr": "powerstore_metricVg_avg_io_size{IP=\"$IP\",appliance_id=\"$Appliance\"}",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "[$Appliance] Volume Group  IO Size",
       "type": "timeseries"
     },
     {
@@ -2370,7 +2698,7 @@
         "h": 6,
         "w": 24,
         "x": 0,
-        "y": 61
+        "y": 81
       },
       "id": 58,
       "options": {
@@ -2471,7 +2799,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 67
+        "y": 87
       },
       "id": 42,
       "panels": [],
@@ -2578,7 +2906,7 @@
         "h": 13,
         "w": 11,
         "x": 0,
-        "y": 68
+        "y": 88
       },
       "id": 4,
       "options": {
@@ -2726,7 +3054,7 @@
         "h": 5,
         "w": 8,
         "x": 11,
-        "y": 68
+        "y": 88
       },
       "id": 50,
       "options": {
@@ -2861,7 +3189,7 @@
         "h": 7,
         "w": 5,
         "x": 19,
-        "y": 68
+        "y": 88
       },
       "id": 49,
       "options": {
@@ -2993,7 +3321,7 @@
         "h": 8,
         "w": 8,
         "x": 11,
-        "y": 73
+        "y": 93
       },
       "id": 48,
       "options": {
@@ -3125,7 +3453,7 @@
         "h": 6,
         "w": 5,
         "x": 19,
-        "y": 75
+        "y": 95
       },
       "id": 47,
       "options": {
@@ -3192,9 +3520,558 @@
         }
       ],
       "type": "table"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 101
+      },
+      "id": 62,
+      "panels": [],
+      "title": "Filesystem",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "jU5gl8iSz"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              }
+            ]
+          },
+          "unit": "ms"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 102
+      },
+      "id": 66,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "jU5gl8iSz"
+          },
+          "editorMode": "code",
+          "expr": "powerstore_metricFilesystem_avg_latency{IP=\"$IP\",appliance_id=\"$Appliance\"}",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "[$Appliance] Filesystem Avg Latency",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "jU5gl8iSz"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 102
+      },
+      "id": 69,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "jU5gl8iSz"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "powerstore_metricFilesystem_avg_size{IP=\"$IP\",appliance_id=\"$Appliance\"}",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "B"
+        }
+      ],
+      "title": "[$Appliance] Filesystem Total IO Size",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "jU5gl8iSz"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "iops"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 109
+      },
+      "id": 68,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "jU5gl8iSz"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "powerstore_metricFilesystem_avg_total_iops{IP=\"$IP\",appliance_id=\"$Appliance\"}",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "B"
+        }
+      ],
+      "title": "[$Appliance] Filesystem Total IOPS",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "jU5gl8iSz"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              }
+            ]
+          },
+          "unit": "binBps"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 109
+      },
+      "id": 67,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "jU5gl8iSz"
+          },
+          "editorMode": "code",
+          "expr": "powerstore_metricFilesystem_avg_total_bandwidth{IP=\"$IP\",appliance_id=\"$Appliance\"}",
+          "hide": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "C"
+        }
+      ],
+      "title": "[$Appliance] Filesystem Total Bandwidth",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "jU5gl8iSz"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "left",
+            "displayMode": "auto",
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Value #A"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "bytes"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Value #B"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "bytes"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Value #C"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": ":1"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 24,
+        "x": 0,
+        "y": 116
+      },
+      "id": 60,
+      "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "9.3.8",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "jU5gl8iSz"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "powerstore_filesystem_logical_provisioned{IP=\"$IP\",appliance_id=\"$Appliance\"}",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "__auto",
+          "range": false,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "jU5gl8iSz"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "powerstore_filesystem_logical_used{IP=\"$IP\",appliance_id=\"$Appliance\"}",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "legendFormat": "__auto",
+          "range": false,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "jU5gl8iSz"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "powerstore_filesystem_thin_savings{IP=\"$IP\",appliance_id=\"$Appliance\"}",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "legendFormat": "__auto",
+          "range": false,
+          "refId": "C"
+        }
+      ],
+      "title": "Filesystem",
+      "transformations": [
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "include": {
+              "names": [
+                "appliance_id",
+                "name",
+                "Value #A",
+                "Value #B",
+                "Value #C"
+              ]
+            }
+          }
+        },
+        {
+          "id": "merge",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "indexByName": {},
+            "renameByName": {
+              "Value #A": "Logical Provisione",
+              "Value #B": "Logical Used",
+              "Value #C": "Thin Savings",
+              "appliance_id": "Appliance ID",
+              "name": "Filesystem Name"
+            }
+          }
+        }
+      ],
+      "type": "table"
     }
   ],
-  "refresh": false,
+  "refresh": "5s",
   "schemaVersion": 37,
   "style": "dark",
   "tags": [],
@@ -3262,6 +4139,6 @@
   "timezone": "",
   "title": "powerstore exporter from prometheus dashboard",
   "uid": "vt4jLZnSk2",
-  "version": 7,
+  "version": 22,
   "weekStart": ""
 }

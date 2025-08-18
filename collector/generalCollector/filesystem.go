@@ -1,38 +1,26 @@
-/*
- Copyright (c) 2023-2024 Dell Inc. or its subsidiaries. All Rights Reserved.
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
-     http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
-*/
-
 package generalCollector
 
 import (
+	"powerstore-metrics-exporter/collector/client"
+	"time"
+
 	"github.com/go-kit/log"
 	"github.com/go-kit/log/level"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/tidwall/gjson"
-	"powerstore/collector/client"
 )
 
 var metricFileSystemCollector = []string{
-	"size_total",
-	"size_used",
+	"logical_provisioned",
+	"logical_used",
+	"thin_savings",
 }
 
 // file description
 var metricFileSystemDescMap = map[string]string{
-	"size_total": "filesystem total size",
-	"size_used":  "filesystem used size",
+	"logical_provisioned": "Last logical provisioned space during the period.",
+	"logical_used":        "Last logical used space during the period.",
+	"thin_savings":        "Last thin savings ratio during the period.",
 }
 
 type fileSystemCollector struct {
@@ -51,22 +39,30 @@ func NewFileCollector(api *client.Client, logger log.Logger) *fileSystemCollecto
 }
 
 func (c *fileSystemCollector) Collect(ch chan<- prometheus.Metric) {
-	fileData, err := c.client.GetFile()
-	if err != nil {
-		level.Warn(c.logger).Log("msg", "get file system data error", "err", err)
-		return
-	}
-	for _, file := range gjson.Parse(fileData).Array() {
-		name := file.Get("name").String()
-		id := file.Get("appliance_id").String()
+	level.Info(c.logger).Log("msg", "Start collecting filesystem data")
+	startTime := time.Now()
+	moduleIDArray := client.PowerstoreModuleID[c.client.IP]
+	for filesystemID, filesystemName := range moduleIDArray["filesystem"] {
+		filesystemData, err := c.client.GetFilesystemCap(filesystemID)
+		if err != nil {
+			level.Warn(c.logger).Log("msg", "get filesystem data error", "err", err)
+			return
+		}
+		filesystemArray := gjson.Parse(filesystemData).Array()
+		if len(filesystemArray) == 0 {
+			continue
+		}
+
+		id := filesystemArray[len(filesystemArray)-1].Get("appliance_id").String()
 		for _, metricName := range metricFileSystemCollector {
-			metricValue := file.Get(metricName)
-			metricDesc := c.metrics[metricName]
+			metricValue := filesystemArray[len(filesystemArray)-1].Get(metricName)
+			metricDesc := c.metrics["filesystem_"+metricName]
 			if metricValue.Exists() && metricValue.Type != gjson.Null {
-				ch <- prometheus.MustNewConstMetric(metricDesc, prometheus.GaugeValue, metricValue.Float(), name, id)
+				ch <- prometheus.MustNewConstMetric(metricDesc, prometheus.GaugeValue, metricValue.Float(), filesystemName.String(), id)
 			}
 		}
 	}
+	level.Info(c.logger).Log("msg", "Obtaining the filesystem is successful", "time", time.Since(startTime))
 }
 
 func (c *fileSystemCollector) Describe(ch chan<- *prometheus.Desc) {
@@ -78,7 +74,7 @@ func (c *fileSystemCollector) Describe(ch chan<- *prometheus.Desc) {
 func getFileSystemMetrics(ip string) map[string]*prometheus.Desc {
 	res := map[string]*prometheus.Desc{}
 	for _, metricName := range metricFileSystemCollector {
-		res[metricName] = prometheus.NewDesc(
+		res["filesystem_"+metricName] = prometheus.NewDesc(
 			"powerstore_filesystem_"+metricName,
 			getFileSystemDescByType(metricName),
 			[]string{"name", "appliance_id"},
