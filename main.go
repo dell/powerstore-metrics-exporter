@@ -33,6 +33,7 @@ var (
 func init() {
 	flag.StringVar(&configPath, "c", "config.yml", "powerstore exporter configuration file path")
 	flag.Parse()
+
 	config = utils.GetConfig(configPath)
 	loggers = utils.GetLogger(config.Log.Level, config.Log.Path, config.Log.Type)
 	utils.InitReqCounter(config.Exporter.ReqLimit)
