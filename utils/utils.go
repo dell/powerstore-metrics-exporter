@@ -17,13 +17,15 @@
 package utils
 
 import (
+	stdlog "log"
+	"os"
+
 	"github.com/gin-gonic/gin"
 	"github.com/go-kit/log"
 	"github.com/go-kit/log/level"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"io/ioutil"
-	stdlog "log"
+	"gopkg.in/yaml.v3"
 )
 
 var (
@@ -43,8 +45,10 @@ type Storage struct {
 }
 
 type Exporter struct {
-	Port     int `yaml:"port"`
-	ReqLimit int `yaml:"reqLimit"`
+	Port     int    `yaml:"port"`
+	ReqLimit int    `yaml:"reqLimit"`
+	Cert     string `yaml:"cert"`
+	Key      string `yaml:"key"`
 }
 
 type Logs struct {
@@ -60,12 +64,13 @@ type Config struct {
 }
 
 func GetConfig(configPath string) *Config {
-	yamlFile, err := ioutil.ReadFile(configPath)
+	yamlFile, err := os.ReadFile(configPath)
 	if err != nil {
 		stdlog.Fatalf("Error reading configuration file: %s\n", err)
 	}
+	expandedyaml := os.ExpandEnv(string(yamlFile))
 	config := Config{}
-	err = yaml.Unmarshal(yamlFile, &config)
+	err = yaml.Unmarshal([]byte(expandedyaml), &config)
 	if err != nil {
 		stdlog.Fatalf("Error Unmarshal yamL file: %s\n", err)
 	}
@@ -73,6 +78,8 @@ func GetConfig(configPath string) *Config {
 }
 
 func PrometheusHandler(registry *prometheus.Registry, logger log.Logger) gin.HandlerFunc {
+	//Check for cert and key file
+
 	handlerOpts := promhttp.HandlerOpts{
 		ErrorLog:      stdlog.New(log.NewStdlibAdapter(level.Error(logger)), "", 0),
 		ErrorHandling: promhttp.ContinueOnError,

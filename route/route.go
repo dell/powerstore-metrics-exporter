@@ -94,8 +94,20 @@ func Run(config *utils.Config, logger log.Logger) {
 	httpPort := fmt.Sprintf(":%s", strconv.Itoa(config.Exporter.Port))
 	level.Info(logger).Log("msg", "~~~~~~~~~~~~~Start PowerStore Exporter~~~~~~~~~~~~~~")
 	level.Info(logger).Log("http-port", httpPort)
-	err := r.Run(httpPort)
-	if err != nil {
-		level.Error(logger).Log("msg", "Service startup failed", "err", err)
+
+	// Start HTTP server with or without TLS based on the presence of cert and key
+	if config.Exporter.Cert == "" || config.Exporter.Key == "" {
+		level.Info(logger).Log("msg", "Starting HTTP server without TLS")
+		err := r.Run(httpPort)
+		if err != nil {
+			level.Error(logger).Log("msg", "Service startup failed", "err", err)
+		}
+	} else {
+		level.Info(logger).Log("msg", "Starting HTTP server with TLS")
+		// Start HTTPS server
+		err := r.RunTLS(httpPort, config.Exporter.Cert, config.Exporter.Key)
+		if err != nil {
+			level.Error(logger).Log("msg", "Service startup failed", "err", err)
+		}
 	}
 }

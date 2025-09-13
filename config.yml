@@ -1,13 +1,15 @@
 exporter:
   port: 9010
   reqLimit: 200
+  cert: ./server.crt # Path to your TLS certificate file Remove for HTTP
+  key: ./server.key # Path to your TLS certificate file Remove for HTTP
 log:
   # type is [logfmt or json]
   type: logfmt
   path: ./powerstoreExporter.out.log
   level: info
 storageList:
-  - ip: 10.0.0.1
+  - ip: 10.0.0.1 #Env variables can be used. Eg $VARNAME
     user: your-first-powerstore-username
     password: your-first-powerstore-password
     apiVersion: v1
