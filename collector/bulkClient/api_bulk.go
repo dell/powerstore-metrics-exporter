@@ -117,8 +117,12 @@ func (bc *BulkClient) BulkEnable() error {
 			return errors.New("get resource error: " + string(enableRespBody))
 		}
 		enableRespBodyJson := gjson.Parse(string(enableRespBody))
-
-		return errors.New("Failed to enable batch acquisition performance data function: " + enableRespBodyJson.Get("messages").Array()[0].Get("message_l10n").String())
+		msg := enableRespBodyJson.Get("messages").Array()
+		if len(msg) > 0 {
+			return errors.New("Failed to enable batch acquisition performance data function: " + enableRespBodyJson.Get("messages").Array()[0].Get("message_l10n").String())
+		} else {
+			return errors.New("Failed to enable batch acquisition performance data function. Status: " + enableResp.Status)
+		}
 	}
 	level.Info(bc.logger).Log("msg", "Successfully enabled the batch acquisition performance data function")
 	return nil
