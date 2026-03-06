@@ -130,6 +130,17 @@ func Run(config *utils.Config, logger log.Logger) {
 			metricsGroup.GET("nas", utils.PrometheusHandler(NasRegistry, logger))
 			metricsGroup.GET("volumeGroup", utils.PrometheusHandler(VolumeGroupRegistry, logger))
 			metricsGroup.GET("capacity", utils.PrometheusHandler(CapacityRegistry, logger))
+			metricsGroup.GET("all", utils.PrometheusHandler(prometheus.Gatherers{
+				ClusterRegistry,
+				PortRegistry,
+				FileSystemRegistry,
+				HardwareRegistry,
+				VolumeRegistry,
+				ApplianceRegistry,
+				NasRegistry,
+				VolumeGroupRegistry,
+				CapacityRegistry,
+			}, logger))
 		}
 		level.Info(logger).Log("msg", "The Powerstore is ready", "ip", storage.Ip)
 	}
